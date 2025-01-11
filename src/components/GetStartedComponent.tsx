@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function GetStartedComponent() {
   const quotes = [
@@ -46,6 +47,7 @@ export default function GetStartedComponent() {
   ];
 
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -55,9 +57,11 @@ export default function GetStartedComponent() {
   }, [quotes.length]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]">
+    <div className="flex items-center justify-center min-h-screen md:px-6 md:py-12 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]">
       <div className="w-full max-w-4xl bg-opacity-70 bg-black shadow-lg md:p-12 p-8 md:rounded-lg rounded-none">
-        {/* Left Section: Text */}
+        <h1 className="text-4xl font-extrabold mb-6 text-center md:text-left text-pink-500">
+          Musica
+        </h1>
         <div className="md:flex md:items-center md:space-x-8">
           <div className="md:w-1/2">
             <AnimatePresence mode="wait">
@@ -108,6 +112,7 @@ export default function GetStartedComponent() {
                 className="px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg font-medium"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => router.push("/authform/signin")}
               >
                 Sign In
               </motion.button>
@@ -115,6 +120,7 @@ export default function GetStartedComponent() {
                 className="px-6 py-3 bg-white text-pink-500 rounded-lg shadow-lg font-medium"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => router.push("/authform/signup")}
               >
                 Sign Up
               </motion.button>
