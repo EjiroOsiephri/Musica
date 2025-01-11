@@ -1,10 +1,10 @@
-import Sidebar from "@/utils/Sidebar";
+import Dashboard from "@/components/MainContent";
 import React from "react";
 
 const home = () => {
   return (
     <>
-      <Sidebar />
+      <Dashboard />
     </>
   );
 };
