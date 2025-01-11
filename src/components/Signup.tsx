@@ -9,7 +9,7 @@ export default function SignUpComponent() {
 
   return (
     <motion.div
-      className="flex items-center justify-center min-h-screen px-6 py-12 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]"
+      className="flex items-center justify-center min-h-screen px-2 py-3 md:px-6 md:py-12 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]"
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
@@ -80,7 +80,7 @@ export default function SignUpComponent() {
             <FaGoogle className="mr-2" />
             Google
           </button>
-          <button className="flex items-center justify-center w-40 py-2 bg-blue-700 text-white rounded-lg shadow-md hover:scale-105 transition-transform">
+          <button className="flex items-center justify-center w-40 py-2 bg-[#A4C7C6] text-white rounded-lg shadow-md hover:scale-105 transition-transform">
             <FaFacebook className="mr-2" />
             Facebook
           </button>
