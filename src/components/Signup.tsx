@@ -68,6 +68,7 @@ export default function SignUpComponent() {
           />
           <button
             type="submit"
+            onClick={() => router.push("/dashboard")}
             className="w-full py-3 mb-6 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
             Sign Up

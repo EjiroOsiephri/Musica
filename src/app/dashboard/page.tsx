@@ -1,7 +1,7 @@
 import Dashboard from "@/components/MainContent";
 import React from "react";
 
-const home = () => {
+const dashboard = () => {
   return (
     <>
       <Dashboard />
@@ -9,4 +9,4 @@ const home = () => {
   );
 };
 
-export default home;
+export default dashboard;
