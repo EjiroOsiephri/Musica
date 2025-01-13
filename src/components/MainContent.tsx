@@ -17,6 +17,7 @@ interface Playlist {
 export default function Dashboard() {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
 
   const menuItems = [
     { icon: "/Home.png", label: "Home", route: "/" },
@@ -65,28 +66,26 @@ export default function Dashboard() {
   };
 
   const closeSidebar = () => {
-    if (isSidebarOpen) setIsSidebarOpen(false);
+    if (isSidebarOpen && isMobileView) setIsSidebarOpen(false);
   };
 
   useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      const sidebar = document.querySelector(".sidebar");
-      if (sidebar && !sidebar.contains(e.target as Node)) {
-        closeSidebar();
-      }
+    const updateView = () => {
+      setIsMobileView(window.innerWidth < 1024);
     };
 
-    document.addEventListener("click", handleOutsideClick);
+    updateView();
+    window.addEventListener("resize", updateView);
 
     return () => {
-      document.removeEventListener("click", handleOutsideClick);
+      window.removeEventListener("resize", updateView);
     };
-  }, [isSidebarOpen]);
+  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-[#16181A] text-white">
       {/* Sidebar Overlay for Mobile */}
-      {isSidebarOpen && window.innerWidth < 1024 && (
+      {isSidebarOpen && isMobileView && (
         <motion.div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           initial={{ opacity: 0 }}
@@ -99,10 +98,12 @@ export default function Dashboard() {
       {/* Sidebar */}
       <motion.div
         className={`sidebar fixed left-0 top-0 h-full w-64 lg:w-20 bg-[#1D2123] flex flex-col justify-between z-50 ${
-          isSidebarOpen ? "flex" : "hidden lg:flex"
+          isSidebarOpen || !isMobileView ? "flex" : "hidden"
         }`}
         initial={{ x: -300 }}
-        animate={{ x: isSidebarOpen || window.innerWidth >= 1024 ? 0 : -300 }}
+        animate={{
+          x: isSidebarOpen || !isMobileView ? 0 : -300,
+        }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         {/* Logo */}
@@ -153,19 +154,21 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Hamburger Menu */}
-      <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#1D2123]">
-        <FaBars
-          className="text-white text-2xl cursor-pointer"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
-        <div className="flex items-center space-x-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-[#25292C] text-white rounded-lg px-4 py-2 text-sm"
+      {isMobileView && (
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#1D2123]">
+          <FaBars
+            className="text-white text-2xl cursor-pointer"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           />
+          <div className="flex items-center space-x-4">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-[#25292C] text-white rounded-lg px-4 py-2 text-sm"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-grow lg:ml-20 p-4 lg:p-8 space-y-8 lg:space-y-0 lg:space-x-8 flex flex-col lg:flex-row">
@@ -175,7 +178,7 @@ export default function Dashboard() {
           style={{ height: "450px" }}
         >
           <div className="flex flex-col justify-center p-8 z-10">
-            <span className="text-sm text-white-400 mb-2">
+            <span className="absolute top-6 text-lg text-white-400 mb-2">
               Curated Playlist
             </span>
             <h2 className="text-3xl font-bold mb-4">R & B Hits</h2>
@@ -241,21 +244,21 @@ export default function Dashboard() {
                   <div className="lg:block">
                     <h4 className="font-bold">{playlist.title}</h4>
                     <p className="text-sm text-gray-400">{playlist.artist}</p>
-                    <p className="text-xs text-gray-400">{playlist.duration}</p>
+                    <p className="text-xs text-white">{playlist.duration}</p>
                   </div>
                 </div>
                 <motion.div
                   className={`cursor-pointer flex justify-center items-center border-2 ${
-                    playlist.isLiked ? "border-pink-500" : "border-gray-500"
+                    playlist.isLiked ? "border-pink-500" : "border-white"
                   } rounded-full p-1`}
                   whileTap={{ scale: 1.2 }}
                   onClick={() => handleLikeClick(index)}
                 >
                   <FaHeart
-                    className={`$ {
+                    className={`${
                       playlist.isLiked
                         ? "text-pink-500 scale-110"
-                        : "text-gray-400"
+                        : "text-white"
                     } transition-all duration-300`}
                   />
                 </motion.div>
