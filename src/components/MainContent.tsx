@@ -189,13 +189,13 @@ export default function Dashboard() {
                 <Image src="/Ellipse 5.png" alt="User" width={32} height={32} />
                 <Image src="/Ellipse 6.png" alt="User" width={32} height={32} />
               </div>
-              <span className="text-sm text-gray-400 flex items-center">
+              <span className="text-lg text-white flex items-center">
                 <motion.div
                   className="rounded-full p-2 cursor-pointer"
                   whileTap={{ scale: 1.2 }}
                   onClick={() => console.log("Like clicked")}
                 >
-                  <FaHeart className="text-black-500" />
+                  <FaHeart className="text-white" />
                 </motion.div>
                 33k Likes
               </span>
@@ -221,16 +221,13 @@ export default function Dashboard() {
         </div>
 
         {/* Top Charts */}
-        <div
-          className="w-full lg:w-2/5 p-4 rounded-xl bg-[#1D2123]"
-          style={{ height: "450px" }}
-        >
+        <div className="w-full lg:w-2/5 p-4 overflow-x-auto lg:overflow-visible">
           <h3 className="text-xl font-bold mb-4">Top charts</h3>
-          <div className="flex flex-col space-y-4">
+          <div className="flex lg:flex-col space-x-4 lg:space-x-0 lg:space-y-4">
             {playlists.map((playlist, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-[#25292C] p-4 rounded-lg"
+                className="flex items-center justify-between bg-[#25292C] p-4 rounded-lg min-w-[300px] lg:min-w-0"
               >
                 <div className="flex items-center space-x-4">
                   <Image
@@ -239,6 +236,7 @@ export default function Dashboard() {
                     width={80}
                     height={80}
                     className="rounded-lg"
+                    loading="lazy"
                   />
                   <div className="lg:block">
                     <h4 className="font-bold">{playlist.title}</h4>
@@ -254,7 +252,7 @@ export default function Dashboard() {
                   onClick={() => handleLikeClick(index)}
                 >
                   <FaHeart
-                    className={`${
+                    className={`$ {
                       playlist.isLiked
                         ? "text-pink-500 scale-110"
                         : "text-gray-400"
