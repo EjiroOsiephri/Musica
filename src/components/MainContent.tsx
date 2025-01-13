@@ -16,7 +16,6 @@ interface Playlist {
 
 export default function Dashboard() {
   const router = useRouter();
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const menuItems = [
@@ -86,8 +85,8 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-[#16181A] text-white">
-      {/* Sidebar */}
-      {isSidebarOpen && (
+      {/* Sidebar Overlay for Mobile */}
+      {isSidebarOpen && window.innerWidth < 1024 && (
         <motion.div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           initial={{ opacity: 0 }}
@@ -97,12 +96,13 @@ export default function Dashboard() {
         ></motion.div>
       )}
 
+      {/* Sidebar */}
       <motion.div
         className={`sidebar fixed left-0 top-0 h-full w-64 lg:w-20 bg-[#1D2123] flex flex-col justify-between z-50 ${
           isSidebarOpen ? "flex" : "hidden lg:flex"
         }`}
         initial={{ x: -300 }}
-        animate={{ x: isSidebarOpen ? 0 : -300 }}
+        animate={{ x: isSidebarOpen || window.innerWidth >= 1024 ? 0 : -300 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         {/* Logo */}
@@ -191,17 +191,16 @@ export default function Dashboard() {
               </div>
               <span className="text-sm text-gray-400 flex items-center">
                 <motion.div
-                  className="border-2 border-gray-500 rounded-full p-2 cursor-pointer"
+                  className="rounded-full p-2 cursor-pointer"
                   whileTap={{ scale: 1.2 }}
                   onClick={() => console.log("Like clicked")}
                 >
-                  <FaHeart className="text-gray-500" />
-                </motion.div>{" "}
+                  <FaHeart className="text-black-500" />
+                </motion.div>
                 33k Likes
               </span>
             </div>
           </div>
-
           <div className="absolute inset-0 flex justify-end items-center">
             <Image
               src="/Vector.svg"
