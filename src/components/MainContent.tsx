@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaHeart, FaBars } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import Logo from "../../public/logo.png";
 
 interface Playlist {
   title: string;
@@ -113,7 +114,7 @@ export default function Dashboard() {
             whileHover={{ scale: 1.1 }}
             onClick={() => router.push("/")}
           >
-            <Image src="/Logo.png" alt="Logo" width={32} height={32} />
+            <Image src={Logo} alt="Logo" width={32} height={32} />
           </motion.div>
 
           {/* Menu Items */}
@@ -173,55 +174,85 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-grow lg:ml-20 p-4 lg:p-8 space-y-8 lg:space-y-0 lg:space-x-8 flex flex-col lg:flex-row">
         {/* Featured Playlist */}
-        <div
-          className="flex flex-1 bg-[#609EAF] rounded-xl overflow-hidden relative"
-          style={{ height: "450px" }}
-        >
-          <div className="flex flex-col justify-center p-8 z-10">
-            <span className="absolute top-6 text-lg text-white-400 mb-2">
-              Curated Playlist
-            </span>
-            <h2 className="text-3xl font-bold mb-4">R & B Hits</h2>
-            <h3 className="text-white-400 max-w-64 mb-6 hidden lg:block">
-              All mine, Lie again, Petty call me everyday, Out of time, No love,
-              Bad habit, and so much more
-            </h3>
-            <div className="flex items-center space-x-4">
-              <div className="flex -space-x-2">
-                <Image src="/Ellipse 3.png" alt="User" width={32} height={32} />
-                <Image src="/Ellipse 5.png" alt="User" width={32} height={32} />
-                <Image src="/Ellipse 6.png" alt="User" width={32} height={32} />
-              </div>
-              <span className="text-lg text-white flex items-center">
-                <motion.div
-                  className="rounded-full p-2 cursor-pointer"
-                  whileTap={{ scale: 1.2 }}
-                  onClick={() => console.log("Like clicked")}
-                >
-                  <FaHeart className="text-white" />
-                </motion.div>
-                33k Likes
+
+        <section className="flex flex-col md:flex-1">
+          {!isMobileView && (
+            <div className="flex items-center space-x-4 -mt-5 mb-4">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="bg-[#25292C] w-full text-white rounded-lg px-4 py-2 text-sm"
+              />
+            </div>
+          )}
+
+          <div
+            className="flex bg-[#609EAF] rounded-xl overflow-hidden relative"
+            style={{ height: "450px" }}
+          >
+            <div className="flex flex-col justify-center p-8 z-10">
+              <span className="absolute  top-6 text-lg text-white-400  mb-2">
+                Curated Playlist
               </span>
+              <h2 className="text-3xl font-bold mt-6 md:mt-0 mb-4">
+                R & B Hits
+              </h2>
+              <h3 className="text-white-400 max-w-64 mb-6 lg:block">
+                All mine, Lie again, Petty call me everyday, Out of time, No
+                love, Bad habit, and so much more
+              </h3>
+              <div className="flex items-center space-x-4">
+                <div className="flex -space-x-2">
+                  <Image
+                    src="/Ellipse 3.png"
+                    alt="User"
+                    width={32}
+                    height={32}
+                  />
+                  <Image
+                    src="/Ellipse 5.png"
+                    alt="User"
+                    width={32}
+                    height={32}
+                  />
+                  <Image
+                    src="/Ellipse 6.png"
+                    alt="User"
+                    width={32}
+                    height={32}
+                  />
+                </div>
+                <span className="text-lg text-white flex items-center">
+                  <motion.div
+                    className="rounded-full p-2 cursor-pointer"
+                    whileTap={{ scale: 1.2 }}
+                    onClick={() => console.log("Like clicked")}
+                  >
+                    <FaHeart className="text-white" />
+                  </motion.div>
+                  33k Likes
+                </span>
+              </div>
+            </div>
+            <div className="absolute inset-0 flex justify-end items-center">
+              <Image
+                src="/Vector.svg"
+                alt="Background Design"
+                layout="fill"
+                objectFit="cover"
+                className="z-0  opacity-50"
+              />
+              <Image
+                src="/Pexels Photo by Eric Esma.png"
+                alt="Artist"
+                width={600}
+                height={900}
+                objectFit="contain"
+                className="z-10 ml-[2500px] -mt-[60px] hidden xl:block opacity-0 md:opacity-100"
+              />
             </div>
           </div>
-          <div className="absolute inset-0 flex justify-end items-center">
-            <Image
-              src="/Vector.svg"
-              alt="Background Design"
-              layout="fill"
-              objectFit="contain"
-              className="z-0  opacity-50"
-            />
-            <Image
-              src="/Pexels Photo by Eric Esma.png"
-              alt="Artist"
-              width={600}
-              height={900}
-              objectFit="contain"
-              className="z-10 ml-10 opacity-0 md:opacity-100"
-            />
-          </div>
-        </div>
+        </section>
 
         {/* Top Charts */}
         <div className="w-full lg:w-2/5 p-4 overflow-x-auto lg:overflow-visible">
@@ -243,7 +274,9 @@ export default function Dashboard() {
                   />
                   <div className="lg:block">
                     <h4 className="font-bold">{playlist.title}</h4>
-                    <p className="text-sm text-gray-400">{playlist.artist}</p>
+                    <p className="text-sm text-gray-400 mt-1 mb-1">
+                      {playlist.artist}
+                    </p>
                     <p className="text-xs text-white">{playlist.duration}</p>
                   </div>
                 </div>
