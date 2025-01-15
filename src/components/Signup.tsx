@@ -35,7 +35,12 @@ export default function SignUpComponent() {
         </h2>
 
         {/* Form */}
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            router.push("/dashboard");
+          }}
+        >
           <input
             type="text"
             placeholder="First Name"

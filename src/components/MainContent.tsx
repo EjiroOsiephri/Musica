@@ -256,12 +256,12 @@ export default function Dashboard() {
 
         {/* Top Charts */}
         <div className="w-full lg:w-2/5 p-4 overflow-x-auto lg:overflow-visible">
-          <h3 className="text-xl font-bold mb-4">Top charts</h3>
+          <h3 className="text-xl font-bold mt-12 md:mt-6 mb-4">Top charts</h3>
           <div className="flex lg:flex-col space-x-4 lg:space-x-0 lg:space-y-4">
             {playlists.map((playlist, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-[#25292C] p-4 rounded-lg min-w-[300px] lg:min-w-0"
+                className="flex items-center justify-between bg-[#1A1E1F] p-4 rounded-lg min-w-[300px] lg:min-w-0"
               >
                 <div className="flex items-center space-x-4">
                   <Image
