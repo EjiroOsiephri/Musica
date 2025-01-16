@@ -18,14 +18,14 @@ export default function SignInComponent() {
         {/* Go Back Button */}
         <button
           onClick={() => router.push("/") /* Go back to home page */}
-          className="text-gray-300 underline text-sm mb-4 hover:text-pink-500"
+          className="text-gray-300 underline text-sm mb-4 hover:text-[#FACD66]"
         >
           Go Back
         </button>
 
         {/* Title */}
         <h1
-          className="text-4xl font-extrabold mb-6 text-center text-pink-500 cursor-pointer"
+          className="text-4xl font-extrabold mb-6 text-center text-[#FACD66] cursor-pointer"
           onClick={() => router.back()}
         >
           Musica
@@ -53,7 +53,7 @@ export default function SignInComponent() {
           />
           <button
             onClick={() => router.push("/dashboard")}
-            className="w-full py-3 mb-6 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
+            className="w-full py-3 mb-6 bg-gradient-to-r from-[#FACD66] to-#FACD66 text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
             Sign In
           </button>
@@ -76,7 +76,7 @@ export default function SignInComponent() {
           Need an account?{" "}
           <a
             href="/authform/signup"
-            className="text-pink-500 underline hover:text-white"
+            className="text-[#FACD66] underline hover:text-white"
           >
             Sign Up Now
           </a>

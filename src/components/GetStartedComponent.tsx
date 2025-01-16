@@ -57,9 +57,9 @@ export default function GetStartedComponent() {
   }, [quotes.length]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen md:px-6 md:py-12 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]">
-      <div className="w-full max-w-4xl bg-opacity-70 bg-black shadow-lg md:p-12 p-8 md:rounded-lg rounded-none">
-        <h1 className="text-4xl font-extrabold mb-6 text-center md:text-left text-pink-500">
+    <div className="flex min-h-screen bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]">
+      <div className="w-full bg-opacity-70 bg-black shadow-lg md:p-8 p-8">
+        <h1 className="text-4xl font-extrabold mb-6 text-center md:text-left text-[#FACD66]">
           Musica
         </h1>
         <div className="md:flex md:items-center md:space-x-8">
@@ -101,15 +101,18 @@ export default function GetStartedComponent() {
                 src="/image.png"
                 alt="Piano Player"
                 width={500}
-                height={600}
-                className="object-cover"
+                height={300}
+                className="object-cover h-max"
               />
             </div>
 
             {/* Buttons */}
-            <motion.div className="flex space-x-4">
+            <motion.div
+              style={{ marginTop: "2rem" }}
+              className="flex mt-20 space-x-4"
+            >
               <motion.button
-                className="px-6 py-3 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg font-medium"
+                className="px-6 py-3 bg-gradient-to-r from-[#FACD66] to-[#FACD66] text-[#1A1E1F] rounded-lg shadow-lg font-medium"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/authform/signin")}
@@ -117,7 +120,7 @@ export default function GetStartedComponent() {
                 Sign In
               </motion.button>
               <motion.button
-                className="px-6 py-3 bg-white text-pink-500 rounded-lg shadow-lg font-medium"
+                className="px-6 py-3 bg-white text-[#1A1E1F] rounded-lg shadow-lg font-medium"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/authform/signup")}

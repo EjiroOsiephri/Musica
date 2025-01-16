@@ -9,7 +9,7 @@ export default function SignUpComponent() {
 
   return (
     <motion.div
-      className="flex items-center justify-center min-h-screen px-2 py-1 md:px-6 md:py-12 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]"
+      className="flex items-center justify-center min-h-screen px-2 py-1 md:py-6  bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]"
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}
@@ -18,14 +18,14 @@ export default function SignUpComponent() {
         {/* Go Back Button */}
         <button
           onClick={() => router.push("/") /* Go back to home page */}
-          className="text-gray-300 underline text-sm mb-4 hover:text-pink-500"
+          className="text-gray-300 underline text-sm mb-4 hover:text-[#FACD66]"
         >
           Go Back
         </button>
 
         {/* Title */}
         <h1
-          className="text-4xl font-extrabold mb-6 text-center text-pink-500 cursor-pointer"
+          className="text-4xl font-extrabold mb-6 text-center text-[#FACD66] cursor-pointer"
           onClick={() => router.back()}
         >
           Musica
@@ -74,7 +74,7 @@ export default function SignUpComponent() {
           <button
             type="submit"
             onClick={() => router.push("/dashboard")}
-            className="w-full py-3 mb-6 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
+            className="w-full py-3 mb-6 bg-gradient-to-r from-[#FACD66] to-#FACD66 text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
             Sign Up
           </button>
@@ -97,7 +97,7 @@ export default function SignUpComponent() {
           Already have an account?{" "}
           <a
             href="/authform/signin"
-            className="text-pink-500 underline hover:text-white"
+            className="text-[#FACD66] underline hover:text-white"
           >
             Sign In Now
           </a>
