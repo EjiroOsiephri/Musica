@@ -7,6 +7,9 @@ import {
   FaForward,
   FaBackward,
   FaVolumeUp,
+  FaRandom,
+  FaRedo,
+  FaStepForward,
 } from "react-icons/fa";
 import Image from "next/image";
 import albumCover from "../../public/Rectangle 26.png";
@@ -95,7 +98,8 @@ const MusicPlayer = () => {
 
         {/* Playback Controls */}
         <div className="flex items-center space-x-6">
-          <FaBackward className="cursor-pointer text-xl" />
+          <FaRandom className="hidden sm:block cursor-pointer text-xl" />
+          <FaBackward className="hidden sm:block cursor-pointer text-xl" />
           {isPlaying ? (
             <FaPause
               className="cursor-pointer text-3xl text-[#FACD66]"
@@ -107,11 +111,13 @@ const MusicPlayer = () => {
               onClick={handlePlayPause}
             />
           )}
-          <FaForward className="cursor-pointer text-xl" />
+          <FaForward className="hidden sm:block cursor-pointer text-xl" />
+          <FaRedo className="hidden sm:block cursor-pointer text-xl" />
+          <FaStepForward className="block md:hidden cursor-pointer text-xl" />
         </div>
 
         {/* Volume Control */}
-        <div className="flex items-center space-x-2">
+        <div className="hidden sm:flex items-center space-x-2">
           <FaVolumeUp className="text-xl" />
           <input
             type="range"
@@ -128,7 +134,7 @@ const MusicPlayer = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full max-w-5xl mt-4">
+      <div className="w-full hidden sm:block max-w-5xl mt-4">
         <input
           type="range"
           min="0"
@@ -144,6 +150,26 @@ const MusicPlayer = () => {
 
       {/* Audio Element */}
       <audio ref={audioRef} src="/sample-audio.mp3"></audio>
+
+      {/* Consolidated Styles */}
+      <style jsx>{`
+        input[type="range"]::-webkit-slider-thumb {
+          width: 14px;
+          height: 14px;
+          background: white;
+          border-radius: 50%;
+          cursor: pointer;
+          appearance: none;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+          width: 14px;
+          height: 14px;
+          background: white;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+      `}</style>
     </div>
   );
 };
