@@ -84,7 +84,93 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row  text-white">
+    <div className="flex flex-col lg:flex-row bg-[#16181A] text-white">
+      {/* Sidebar Overlay for Mobile */}
+      {isSidebarOpen && isMobileView && (
+        <motion.div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={closeSidebar}
+        ></motion.div>
+      )}
+
+      {/* Sidebar */}
+      <motion.div
+        className={`sidebar fixed left-0 top-0 h-full w-64 lg:w-20 bg-[#1D2123] flex flex-col justify-between z-50 ${
+          isSidebarOpen || !isMobileView ? "flex" : "hidden"
+        }`}
+        initial={{ x: -300 }}
+        animate={{
+          x: isSidebarOpen || !isMobileView ? 0 : -300,
+        }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        {/* Logo */}
+        <div className="flex flex-col items-center space-y-10 py-6">
+          <motion.div
+            className="cursor-pointer"
+            whileHover={{ scale: 1.1 }}
+            onClick={() => router.push("/")}
+          >
+            <Image src={Logo} alt="Logo" width={32} height={32} />
+          </motion.div>
+
+          {/* Menu Items */}
+          <div className="flex flex-col items-start lg:items-center space-y-6 w-full px-4">
+            {menuItems.map((item, index) => (
+              <motion.div
+                key={index}
+                className="flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col"
+                whileHover={{ scale: 1.1 }}
+                onClick={() => router.push(item.route)}
+              >
+                <Image
+                  src={item.icon}
+                  alt={item.label}
+                  width={24}
+                  height={24}
+                />
+                <span className="text-sm lg:hidden">{item.label}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Items */}
+        <div className="flex flex-col items-start lg:items-center space-y-6 w-full px-4 py-6">
+          {bottomItems.map((item, index) => (
+            <motion.div
+              key={index}
+              className="flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col"
+              whileHover={{ scale: 1.1 }}
+              onClick={() => router.push(item.route)}
+            >
+              <Image src={item.icon} alt={item.label} width={24} height={24} />
+              <span className="text-sm lg:hidden">{item.label}</span>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Hamburger Menu */}
+      {isMobileView && (
+        <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#1D2123]">
+          <FaBars
+            className="text-white text-2xl cursor-pointer"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          />
+          <div className="flex items-center space-x-4">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-[#25292C] text-white rounded-lg px-4 py-2 text-sm"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="flex-grow p-4 lg:p-8 space-y-8 lg:space-y-0 lg:space-x-8 flex flex-col lg:flex-row">
         {/* Featured Playlist */}
@@ -170,8 +256,8 @@ export default function Dashboard() {
 
         {/* Top Charts */}
         <div className="w-full lg:w-2/5 p-4 overflow-x-auto lg:overflow-visible">
-          <h3 className="text-xl font-bold md:mt-6 mb-6">Top charts</h3>
-          <div className="flex lg:flex-col mb-6 space-x-4 lg:space-x-0 lg:space-y-4">
+          <h3 className="text-xl font-bold md:mt-6 mb-4">Top charts</h3>
+          <div className="flex lg:flex-col mb-4 space-x-4 lg:space-x-0 lg:space-y-4">
             {playlists.map((playlist, index) => (
               <div
                 key={index}
