@@ -9,13 +9,11 @@ const dashboard = () => {
     <>
       <section className="lg:flex h-screen overflow-hidden">
         <Sidebar />
-        <div className="lg:flex-grow lg:ml-20 overflow-y-auto h-screen pb-24">
-          {/* Add pb-24 to account for the music player's height */}
+        <div className="lg:flex-grow lg:ml-20 overflow-y-auto h-screen pb-36 md:pb-28">
           <Dashboard />
           <MusicSection />
         </div>
         <MusicPlayer />
-        {/* Ensure MusicPlayer remains fixed */}
       </section>
     </>
   );

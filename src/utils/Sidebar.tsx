@@ -103,6 +103,13 @@ export default function Sidebar() {
             className="text-white text-2xl cursor-pointer"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           />
+          <div className="flex items-center space-x-4">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-[#25292C] text-white rounded-lg px-4 py-2 text-sm"
+            />
+          </div>
         </div>
       )}
     </>
