@@ -3,8 +3,9 @@
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaBars } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import Logo from "../../public/logo.png";
 
 interface Playlist {
   title: string;
@@ -16,8 +17,21 @@ interface Playlist {
 
 export default function Dashboard() {
   const router = useRouter();
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
+
+  const menuItems = [
+    { icon: "/Home.png", label: "Home", route: "/" },
+    { icon: "/playlist.svg", label: "My collections", route: "/collections" },
+    { icon: "/radio.svg", label: "Radio", route: "/radio" },
+    { icon: "/videos.svg", label: "Music Videos", route: "/videos" },
+  ];
+
+  const bottomItems = [
+    { icon: "/profile.svg", label: "Profile", route: "/profile" },
+    { icon: "/Logout.png", label: "Logout", route: "/logout" },
+  ];
+
   const [playlists, setPlaylists] = useState<Playlist[]>([
     {
       title: "Golden age of 80s",
@@ -52,6 +66,10 @@ export default function Dashboard() {
     );
   };
 
+  const closeSidebar = () => {
+    if (isSidebarOpen && isMobileView) setIsSidebarOpen(false);
+  };
+
   useEffect(() => {
     const updateView = () => {
       setIsMobileView(window.innerWidth < 1024);
@@ -66,10 +84,11 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex flex-col bg-[#1d2123] text-white">
+    <div className="flex flex-col lg:flex-row bg-[#16181A] text-white">
       {/* Main Content */}
       <div className="flex-grow p-4 lg:p-8 space-y-8 lg:space-y-0 lg:space-x-8 flex flex-col lg:flex-row">
         {/* Featured Playlist */}
+
         <section className="flex flex-col md:flex-1">
           {!isMobileView && (
             <div className="flex items-center space-x-4 -mt-5 mb-4">
@@ -86,7 +105,7 @@ export default function Dashboard() {
             style={{ height: "450px" }}
           >
             <div className="flex flex-col justify-center p-8 z-10">
-              <span className="absolute top-6 text-lg text-white-400 mb-2">
+              <span className="absolute  top-6 text-lg text-white-400  mb-2">
                 Curated Playlist
               </span>
               <h2 className="text-3xl font-bold mt-6 md:mt-0 mb-4">
@@ -135,7 +154,7 @@ export default function Dashboard() {
                 alt="Background Design"
                 layout="fill"
                 objectFit="cover"
-                className="z-0 opacity-50"
+                className="z-0  opacity-50"
               />
               <Image
                 src="/Pexels Photo by Eric Esma.png"
@@ -150,9 +169,9 @@ export default function Dashboard() {
         </section>
 
         {/* Top Charts */}
-        <div className="w-full lg:w-2/5 p-2 overflow-x-auto lg:overflow-visible">
-          <h3 className="text-xl font-bold md:mt-6 mb-4">Top charts</h3>
-          <div className="flex lg:flex-col space-x-4 lg:space-x-0 lg:space-y-4">
+        <div className="w-full lg:w-2/5 p-4 overflow-x-auto lg:overflow-visible">
+          <h3 className="text-xl font-bold md:mt-6 mb-6">Top charts</h3>
+          <div className="flex lg:flex-col mb-6 space-x-4 lg:space-x-0 lg:space-y-4">
             {playlists.map((playlist, index) => (
               <div
                 key={index}
