@@ -154,7 +154,7 @@ const MusicPlayer = () => {
       </div>
 
       {/* Audio Element */}
-      <audio ref={audioRef} src="/sample-audio.mp3"></audio>
+      <audio ref={audioRef} src="/Asake-Dull-(TrendyBeatz.com).mp3"></audio>
 
       {/* Consolidated Styles */}
       <style jsx>{`
