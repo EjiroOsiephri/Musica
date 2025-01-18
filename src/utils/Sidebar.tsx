@@ -20,7 +20,7 @@ export default function Sidebar() {
   ];
 
   const bottomItems = [
-    { icon: "/profile.svg", label: "Profile", route: "/profile" },
+    { icon: "/profile.svg", label: "Profile Data", route: "/profile" },
     { icon: "/Logout.png", label: "Logout", route: "/logout" },
   ];
 
