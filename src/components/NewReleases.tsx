@@ -61,7 +61,7 @@ const musicData = [
 
 const Section = ({ title }: { title: string }) => {
   return (
-    <div className="mb-8">
+    <div className="mb-8 md:mb-12">
       <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
       <motion.div
         className="flex space-x-4 overflow-x-scroll scrollbar-hide"
