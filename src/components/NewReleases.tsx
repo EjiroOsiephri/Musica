@@ -1,65 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Rectangle1 from "../../public/Rectangle 14.png";
-import Rectangle2 from "../../public/Rectangle 15.png";
-import Rectangle3 from "../../public/Rectangle 16.png";
-import Rectangle4 from "../../public/Rectangle 18.png";
-import Rectangle5 from "../../public/Rectangle 20.png";
-import Rectangle6 from "../../public/Rectangle 19.png";
+import axios from "axios";
 
-const musicData = [
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle1,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle2,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle3,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle1,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle4,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle5,
-  },
-
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle3,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle6,
-  },
-  {
-    title: "Life in a bubble",
-    artist: "The van",
-    image: Rectangle1,
-  },
-];
-
-const Section = ({ title }: { title: string }) => {
+const Section = ({ title, musicData }: { title: string; musicData: any[] }) => {
   return (
     <div className="mb-8 md:mb-12">
       <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
@@ -94,11 +40,98 @@ const Section = ({ title }: { title: string }) => {
 };
 
 const MusicSection = () => {
+  const [afrobeats, setAfrobeats] = useState<any[]>([]);
+  const [nigerianTracks, setNigerianTracks] = useState<any[]>([]);
+  const [edSheeranTracks, setEdSheeranTracks] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchMusicData = async () => {
+      const rapidApiKey = "61685f4572mshf647551fc1d2d6bp1fc1bfjsn046cf7c541d7";
+
+      const headers = {
+        "x-rapidapi-key": rapidApiKey,
+        "x-rapidapi-host": "spotify23.p.rapidapi.com",
+      };
+
+      try {
+        // Fetch Afrobeats recommendations
+        const afrobeatsResponse = await axios.get(
+          "https://spotify23.p.rapidapi.com/recommendations/",
+          {
+            headers,
+            params: {
+              limit: "100",
+              seed_genres: "afrobeat",
+              seed_tracks: "0c6xIDDpzE81m2q797ordA", // Example track
+              seed_artists: "4NHQUGzhtTLFvgF5SZesLK", // Example artist
+            },
+          }
+        );
+
+        const afrobeatsData = afrobeatsResponse?.data?.tracks || [];
+        const afrobeatsTracks = afrobeatsData.map((track: any) => ({
+          title: track.name,
+          artist: track.artists[0]?.name || "Unknown Artist",
+          image: track.album.images[0]?.url || "/placeholder-image.png",
+        }));
+        setAfrobeats(afrobeatsTracks);
+
+        // Fetch Nigerian tracks (e.g., Asake)
+        const nigerianResponse = await axios.get(
+          "https://spotify23.p.rapidapi.com/recommendations/",
+          {
+            headers,
+            params: {
+              limit: "100",
+              seed_genres: "afrobeat",
+              seed_tracks: "3FAJ6O0NOHQV8Mc5Ri6ENp", // Example track by Asake
+              seed_artists: "3tVQdUvClmAT7URs9V3rsp", // Example artist: Asake
+            },
+          }
+        );
+
+        const nigerianData = nigerianResponse?.data?.tracks || [];
+        const nigerianTracks = nigerianData.map((track: any) => ({
+          title: track.name,
+          artist: track.artists[0]?.name || "Unknown Artist",
+          image: track.album.images[0]?.url || "/placeholder-image.png",
+        }));
+        setNigerianTracks(nigerianTracks);
+
+        // Fetch Ed Sheeran tracks
+        const edSheeranResponse = await axios.get(
+          "https://spotify23.p.rapidapi.com/recommendations/",
+          {
+            headers,
+            params: {
+              limit: "100",
+              seed_genres: "pop, indie pop",
+              seed_tracks: "4WNcduiCmDNfmTEz7JvmLv", // Example track by Ed Sheeran
+              seed_artists: "6eUKZXaKkcviH0Ku9w2n3V", // Ed Sheeran's Spotify ID
+            },
+          }
+        );
+
+        const edSheeranData = edSheeranResponse?.data?.tracks || [];
+        const edSheeranTracks = edSheeranData.map((track: any) => ({
+          title: track.name,
+          artist: track.artists[0]?.name || "Unknown Artist",
+          image: track.album.images[0]?.url || "/placeholder-image.png",
+        }));
+        setEdSheeranTracks(edSheeranTracks);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchMusicData();
+  }, []);
+
   return (
     <div className="px-8 py-6 overflow-y-auto h-[calc(100vh-4rem)]">
-      {/* Adjust height for proper scrolling */}
-      <Section title="New releases." />
-      <Section title="Popular in your area" />
+      <Section title="Reccommended For You" musicData={afrobeats} />
+      <Section title="Hits For You" musicData={nigerianTracks} />
+      <Section title="Pop Culture" musicData={edSheeranTracks} />
     </div>
   );
 };

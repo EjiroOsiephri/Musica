@@ -83,7 +83,7 @@ const MusicPlayer = () => {
       <div
         className="flex items-center justify-between max-w-7xl"
         style={{
-          width: "90%",
+          width: "85%",
         }}
       >
         {/* Album Cover and Song Info */}

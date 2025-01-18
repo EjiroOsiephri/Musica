@@ -1,10 +1,13 @@
 "use client";
 
+"use client";
+
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FaHeart, FaBars } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import axios from "axios";
 import Logo from "../../public/logo.png";
 
 interface Playlist {
@@ -19,6 +22,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   const menuItems = [
     { icon: "/Home.png", label: "Home", route: "/" },
@@ -31,30 +35,6 @@ export default function Dashboard() {
     { icon: "/profile.svg", label: "Profile", route: "/profile" },
     { icon: "/Logout.png", label: "Logout", route: "/logout" },
   ];
-
-  const [playlists, setPlaylists] = useState<Playlist[]>([
-    {
-      title: "Golden age of 80s",
-      artist: "Sean Swadder",
-      duration: "2:34:45",
-      cover: "/Rectangle 17.png",
-      isLiked: false,
-    },
-    {
-      title: "Reggae 'n' blues",
-      artist: "DJ YK Mule",
-      duration: "1:02:42",
-      cover: "/Rectangle 17 (1).png",
-      isLiked: false,
-    },
-    {
-      title: "Tomorrow's tunes",
-      artist: "Obi Datti",
-      duration: "2:01:25",
-      cover: "/Rectangle 17 (2).png",
-      isLiked: false,
-    },
-  ]);
 
   const handleLikeClick = (playlistIndex: number) => {
     setPlaylists((prevPlaylists) =>
@@ -83,8 +63,64 @@ export default function Dashboard() {
     };
   }, []);
 
+  const fetchPlaylists = async () => {
+    const options = {
+      method: "GET",
+      url: "https://spotify23.p.rapidapi.com/tracks/",
+      params: {
+        ids: "1JDwfM6fzE7HtRukcJSZDd", // Example track ID to get a playlist
+      },
+      headers: {
+        "x-rapidapi-key": "61685f4572mshf647551fc1d2d6bp1fc1bfjsn046cf7c541d7",
+        "x-rapidapi-host": "spotify23.p.rapidapi.com",
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      const trackData = response.data;
+
+      console.log("Track data:", trackData);
+
+      const formattedPlaylists = trackData.tracks.items
+        .slice(0, 3) // Adjust this value as needed for the number of tracks you want to display
+        .map((item: any) => ({
+          title: item.track.name,
+          artist: item.track.artists
+            .map((artist: any) => artist.name)
+            .join(", "), // Join multiple artists if there are any
+          duration: `${(item.track.duration_ms / 60000).toFixed(2)} min`, // Format duration to minutes
+          cover: item.track.album.images[0]?.url, // Get the album cover URL
+          previewUrl: item.track.preview_url, // Track preview URL
+          isLiked: false, // Default value for liked status
+        }));
+
+      setPlaylists(formattedPlaylists);
+    } catch (error) {
+      console.error("Error fetching playlists:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlaylists();
+  }, []);
+
+  useEffect(() => {
+    fetchPlaylists();
+    const updateView = () => {
+      setIsMobileView(window.innerWidth < 1024);
+    };
+
+    updateView();
+    window.addEventListener("resize", updateView);
+
+    return () => {
+      window.removeEventListener("resize", updateView);
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col lg:flex-row bg-[#16181A] text-white">
+    <div className="flex flex-col lg:flex-row text-white">
       {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && isMobileView && (
         <motion.div
