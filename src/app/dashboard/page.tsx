@@ -1,12 +1,22 @@
 import Dashboard from "@/components/MainContent";
 import MusicPlayer from "../../components/MusicPlayer";
 import React from "react";
+import MusicSection from "@/components/NewReleases";
+import Sidebar from "@/utils/Sidebar";
 
 const dashboard = () => {
   return (
     <>
-      <Dashboard />
-      <MusicPlayer />
+      <section className="lg:flex h-screen overflow-hidden">
+        <Sidebar />
+        <div className="lg:flex-grow lg:ml-20 overflow-y-auto h-screen pb-24">
+          {/* Add pb-24 to account for the music player's height */}
+          <Dashboard />
+          <MusicSection />
+        </div>
+        <MusicPlayer />
+        {/* Ensure MusicPlayer remains fixed */}
+      </section>
     </>
   );
 };

@@ -74,13 +74,18 @@ const MusicPlayer = () => {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 bg-[#1D2123]/80 text-white px-8 py-4 flex flex-col items-center backdrop-blur-md shadow-lg"
+      className="fixed z-10 bottom-0 right-0 w-full bg-[#1D2123]/80 text-white px-8 py-4 flex flex-col items-center backdrop-blur-md shadow-lg"
       style={{
         boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.5)",
       }}
     >
       {/* Controls */}
-      <div className="flex items-center justify-between w-full max-w-7xl">
+      <div
+        className="flex items-center justify-between max-w-7xl"
+        style={{
+          width: "90%",
+        }}
+      >
         {/* Album Cover and Song Info */}
         <div className="flex items-center space-x-4 -ml-4">
           <Image
