@@ -84,7 +84,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row bg-[#16181A] text-white">
+    <div className="flex flex-col lg:flex-row  text-white">
       {/* Main Content */}
       <div className="flex-grow p-4 lg:p-8 space-y-8 lg:space-y-0 lg:space-x-8 flex flex-col lg:flex-row">
         {/* Featured Playlist */}
