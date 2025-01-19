@@ -16,6 +16,8 @@ import axios from "axios";
 import Logo from "../../public/logo.png";
 import Image from "next/image";
 import { FaRadio } from "react-icons/fa6";
+import { useDispatch } from "react-redux";
+import { setCurrentTrack } from "@/utils/musicSlice";
 
 interface Playlist {
   title: string;
@@ -23,6 +25,7 @@ interface Playlist {
   duration: string;
   image: string;
   isLiked: boolean;
+  preview: string;
 }
 
 function msToTime(duration: number): string {
@@ -45,6 +48,11 @@ export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const dispatch = useDispatch();
+
+  const handleTrackClick = (track: any) => {
+    dispatch(setCurrentTrack(track));
+  };
 
   const menuItems = [
     { icon: <FaHome size={30} />, label: "Home", route: "/" },
@@ -118,6 +126,7 @@ export default function Dashboard() {
         artist: track.artists[0]?.name || "Unknown Artist",
         image: track.album.images[0]?.url || "/placeholder-image.png",
         duration: msToTime(track?.duration_ms),
+        preview: track.preview_url,
         isLiked: false,
       }));
 
@@ -298,7 +307,15 @@ export default function Dashboard() {
             {playlists.map((playlist, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between bg-[#1A1E1F] p-4 rounded-lg min-w-[300px] lg:min-w-0"
+                onClick={() =>
+                  handleTrackClick({
+                    title: playlist.title,
+                    artist: playlist.artist,
+                    image: playlist.image,
+                    preview: playlist.preview,
+                  })
+                }
+                className="flex items-center  justify-between bg-[#1A1E1F] p-4 rounded-lg min-w-[300px] lg:min-w-0"
               >
                 <div className="flex items-center space-x-4">
                   <Image

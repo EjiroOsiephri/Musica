@@ -9,15 +9,16 @@ import {
   FaVolumeUp,
   FaRandom,
   FaRedo,
-  FaStepForward,
 } from "react-icons/fa";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentTrack } from "../utils/musicSlice";
 
-const MusicPlayer = () => {
+const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const [volume, setVolume] = useState<number>(50);
+  const [isRepeat, setIsRepeat] = useState(false);
 
   const currentTrack = useSelector(
     (state: {
@@ -31,16 +32,18 @@ const MusicPlayer = () => {
       };
     }) => state.music.currentTrack
   );
+
+  const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (currentTrack?.preview && audioRef.current) {
       audioRef.current.src = currentTrack.preview;
       audioRef.current.play();
+      setIsPlaying(true); // Automatically start playing
     }
   }, [currentTrack]);
 
-  // Toggle Play/Pause
   const handlePlayPause = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -52,7 +55,37 @@ const MusicPlayer = () => {
     }
   };
 
-  // Update Progress Bar
+  const handleNext = () => {
+    if (playlist && currentTrack) {
+      const currentIndex = playlist.findIndex(
+        (track) => track.preview === currentTrack.preview
+      );
+      const nextIndex = (currentIndex + 1) % playlist.length;
+      dispatch(setCurrentTrack(playlist[nextIndex]));
+    }
+  };
+
+  const handlePrevious = () => {
+    if (playlist && currentTrack) {
+      const currentIndex = playlist.findIndex(
+        (track) => track.preview === currentTrack.preview
+      );
+      const prevIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+      dispatch(setCurrentTrack(playlist[prevIndex]));
+    }
+  };
+
+  const handleShuffle = () => {
+    if (playlist) {
+      const randomIndex = Math.floor(Math.random() * playlist.length);
+      dispatch(setCurrentTrack(playlist[randomIndex]));
+    }
+  };
+
+  const handleRepeatToggle = () => {
+    setIsRepeat(!isRepeat);
+  };
+
   const handleProgressChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current && audioRef.current.duration) {
       const newProgress = Number(e.target.value);
@@ -62,7 +95,6 @@ const MusicPlayer = () => {
     }
   };
 
-  // Update Volume
   const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {
       const newVolume = Number(e.target.value);
@@ -71,13 +103,18 @@ const MusicPlayer = () => {
     }
   };
 
-  // Track Progress
   useEffect(() => {
     const updateProgress = () => {
       if (audioRef.current) {
         const currentTime = audioRef.current.currentTime;
         const duration = audioRef.current.duration || 0;
         setProgress((currentTime / duration) * 100);
+
+        // Handle repeat functionality
+        if (isRepeat && currentTime >= duration) {
+          audioRef.current.currentTime = 0;
+          audioRef.current.play();
+        }
       }
     };
 
@@ -90,47 +127,42 @@ const MusicPlayer = () => {
         audioRef.current.removeEventListener("timeupdate", updateProgress);
       }
     };
-  }, []);
+  }, [isRepeat]);
 
   return (
     <>
       {currentTrack && (
-        <div
-          className="fixed z-10 bottom-0 right-0 w-full bg-[#1D2123]/80 text-white px-8 py-4 flex flex-col items-center backdrop-blur-md shadow-lg"
-          style={{
-            boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.5)",
-          }}
-        >
-          {/* Controls */}
-          <div
-            className="flex items-center justify-between max-w-7xl"
-            style={{
-              width: "85%",
-            }}
-          >
-            {/* Album Cover and Song Info */}
+        <div className="fixed z-10 bottom-0 right-0 w-full bg-[#1D2123]/80 text-white px-8 py-4 flex flex-col items-center backdrop-blur-md shadow-lg">
+          <div className="flex items-center justify-between max-w-7xl w-full">
+            {/* Album Info */}
             <div className="flex items-center space-x-4 -ml-4">
               <Image
-                src={currentTrack?.image || "/placeholder-image.png"}
+                src={currentTrack.image || "/placeholder-image.png"}
                 alt="Album Cover"
                 width={70}
                 height={60}
                 className="rounded-md"
               />
               <div>
-                <h3 className="text-lg max-w-96 font-bold">
-                  {currentTrack?.title || "No Track Selected"}
+                <h3 className="text-lg font-bold">
+                  {currentTrack.title || "No Track Selected"}
                 </h3>
                 <p className="text-sm text-gray-400">
-                  {currentTrack?.artist || "Unknown Artist"}
+                  {currentTrack.artist || "Unknown Artist"}
                 </p>
               </div>
             </div>
 
-            {/* Playback Controls */}
+            {/* Controls */}
             <div className="flex items-center space-x-6">
-              <FaRandom className="hidden sm:block cursor-pointer text-xl" />
-              <FaBackward className="hidden sm:block cursor-pointer text-xl" />
+              <FaRandom
+                className="cursor-pointer text-xl"
+                onClick={handleShuffle}
+              />
+              <FaBackward
+                className="cursor-pointer text-xl"
+                onClick={handlePrevious}
+              />
               {isPlaying ? (
                 <FaPause
                   className="cursor-pointer text-3xl text-[#FACD66]"
@@ -142,12 +174,19 @@ const MusicPlayer = () => {
                   onClick={handlePlayPause}
                 />
               )}
-              <FaForward className="hidden sm:block cursor-pointer text-xl" />
-              <FaRedo className="hidden sm:block cursor-pointer text-xl" />
-              <FaStepForward className="block md:hidden cursor-pointer text-xl" />
+              <FaForward
+                className="cursor-pointer text-xl"
+                onClick={handleNext}
+              />
+              <FaRedo
+                className={`cursor-pointer text-xl ${
+                  isRepeat ? "text-[#FACD66]" : ""
+                }`}
+                onClick={handleRepeatToggle}
+              />
             </div>
 
-            {/* Volume Control */}
+            {/* Volume */}
             <div className="hidden sm:flex items-center space-x-2">
               <FaVolumeUp className="text-xl" />
               <input
@@ -164,8 +203,8 @@ const MusicPlayer = () => {
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full hidden sm:block max-w-5xl mt-4">
+          {/* Progress */}
+          <div className="w-full max-w-5xl mt-4">
             <input
               type="range"
               min="0"
@@ -179,30 +218,38 @@ const MusicPlayer = () => {
             />
           </div>
 
-          {/* Audio Element */}
           <audio ref={audioRef} controls={false}></audio>
-
-          {/* Consolidated Styles */}
-          <style jsx>{`
-            input[type="range"]::-webkit-slider-thumb {
-              width: 14px;
-              height: 14px;
-              background: white;
-              border-radius: 50%;
-              cursor: pointer;
-              appearance: none;
-            }
-
-            input[type="range"]::-moz-range-thumb {
-              width: 14px;
-              height: 14px;
-              background: white;
-              border-radius: 50%;
-              cursor: pointer;
-            }
-          `}</style>
         </div>
       )}
+      <style jsx>{`
+        input[type="range"]::-webkit-slider-thumb {
+          width: 14px;
+          height: 14px;
+          background: white;
+          border-radius: 50%;
+          cursor: pointer;
+          appearance: none;
+          border: 2px solid #facd66; /* Optional: Add a border for better visibility */
+        }
+
+        input[type="range"]::-moz-range-thumb {
+          width: 14px;
+          height: 14px;
+          background: white;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid #facd66;
+        }
+
+        input[type="range"]::-ms-thumb {
+          width: 14px;
+          height: 14px;
+          background: white;
+          border-radius: 50%;
+          cursor: pointer;
+          border: 2px solid #facd66;
+        }
+      `}</style>
     </>
   );
 };

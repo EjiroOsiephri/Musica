@@ -12,7 +12,7 @@ const dashboard = () => {
           <Dashboard />
           <MusicSection />
         </div>
-        <MusicPlayer />
+        <MusicPlayer playlist={[]} />
         {/* Ensure MusicPlayer remains fixed */}
       </section>
     </>
