@@ -1,9 +1,15 @@
+"use client";
+
 import Dashboard from "@/components/MainContent";
 import MusicPlayer from "../../components/MusicPlayer";
 import React from "react";
 import MusicSection from "@/components/NewReleases";
+import { useSelector } from "react-redux";
 
-const dashboard = () => {
+const DashboardPage = () => {
+  const playlists = useSelector((state: { playlists: any }) => state.playlists);
+  console.log("All Playlists:", playlists.allPlaylists);
+
   return (
     <>
       <section className="lg:flex h-screen overflow-hidden">
@@ -12,11 +18,11 @@ const dashboard = () => {
           <Dashboard />
           <MusicSection />
         </div>
-        <MusicPlayer playlist={[]} />
+        <MusicPlayer playlist={playlists.allPlaylists} />
         {/* Ensure MusicPlayer remains fixed */}
       </section>
     </>
   );
 };
 
-export default dashboard;
+export default DashboardPage;

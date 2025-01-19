@@ -9,6 +9,11 @@ import { setCurrentTrack } from "../utils/musicSlice";
 import { useSelector } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import { GeminiSkeletonLoader } from "../utils/Loader";
+import {
+  setLocalAfrobeats,
+  setLocalEdSheeranTracks,
+  setLocalNigerianTracks,
+} from "@/utils/playlistSlice";
 
 export const Section = ({
   title,
@@ -112,6 +117,7 @@ const MusicSection = () => {
   const [afrobeats, setAfrobeats] = useState<any[]>([]);
   const [nigerianTracks, setNigerianTracks] = useState<any[]>([]);
   const [edSheeranTracks, setEdSheeranTracks] = useState<any[]>([]);
+  const dispatch = useDispatch();
 
   const currentTrack = useSelector(
     (state: {
@@ -157,6 +163,7 @@ const MusicSection = () => {
           preview: track.preview_url,
         }));
         setAfrobeats(afrobeatsTracks);
+        dispatch(setLocalAfrobeats(afrobeatsTracks));
 
         const nigerianResponse = await axios.get(
           "https://spotify23.p.rapidapi.com/recommendations/",
@@ -179,6 +186,7 @@ const MusicSection = () => {
           preview: track.preview_url,
         }));
         setNigerianTracks(nigerianTracks);
+        dispatch(setLocalNigerianTracks(nigerianTracks));
 
         const edSheeranResponse = await axios.get(
           "https://spotify23.p.rapidapi.com/recommendations/",
@@ -201,6 +209,7 @@ const MusicSection = () => {
           preview: track.preview_url,
         }));
         setEdSheeranTracks(edSheeranTracks);
+        dispatch(setLocalEdSheeranTracks(edSheeranTracks));
       } catch (error) {
         console.error("Error fetching data:", error);
       }
