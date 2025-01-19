@@ -48,7 +48,7 @@ export const Section = React.memo(
           {musicData.map((item, index) => (
             <motion.div
               key={index}
-              className="shrink-0 w-[150px] h-[290px] cursor-pointer"
+              className="shrink-0 w-[150px] h-[250px] cursor-pointer"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() =>
@@ -144,7 +144,7 @@ const MusicSection = () => {
           {
             headers,
             params: {
-              limit: "100",
+              limit: "50",
               seed_genres: "afrobeat",
               seed_tracks: "0c6xIDDpzE81m2q797ordA",
               seed_artists: "4NHQUGzhtTLFvgF5SZesLK",
@@ -167,7 +167,7 @@ const MusicSection = () => {
           {
             headers,
             params: {
-              limit: "100",
+              limit: "50",
               seed_genres: "afrobeat",
               seed_tracks: "3FAJ6O0NOHQV8Mc5Ri6ENp",
               seed_artists: "3tVQdUvClmAT7URs9V3rsp",
@@ -190,7 +190,7 @@ const MusicSection = () => {
           {
             headers,
             params: {
-              limit: "100",
+              limit: "50",
               seed_genres: "pop, indie pop",
               seed_tracks: "4WNcduiCmDNfmTEz7JvmLv",
               seed_artists: "6eUKZXaKkcviH0Ku9w2n3V",
@@ -216,7 +216,7 @@ const MusicSection = () => {
   }, []);
 
   return (
-    <div className="px-8 py-6 overflow-y-auto scrollbar-hide h-[calc(100vh-4rem)]">
+    <div className="px-8 py-6 scrollbar-hide h-[calc(100vh-4rem)]">
       <Section title="Reccommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />

@@ -102,7 +102,7 @@ export default function Dashboard() {
       method: "GET",
       url: "https://spotify23.p.rapidapi.com/recommendations/",
       params: {
-        limit: "20",
+        limit: "10",
         seed_tracks: "2Fxmhks0bxGSBdJ92vM42m",
         seed_artists: "6eUKZXaKkcviH0Ku9w2n3V",
         seed_genres: "pop,indie pop",
