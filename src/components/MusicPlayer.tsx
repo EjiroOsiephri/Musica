@@ -156,11 +156,11 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
             {/* Controls */}
             <div className="flex items-center space-x-6">
               <FaRandom
-                className="cursor-pointer text-xl"
+                className="hidden md:block cursor-pointer text-xl"
                 onClick={handleShuffle}
               />
               <FaBackward
-                className="cursor-pointer text-xl"
+                className="cursor-pointer hidden md:block  text-xl"
                 onClick={handlePrevious}
               />
               {isPlaying ? (
@@ -179,7 +179,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                 onClick={handleNext}
               />
               <FaRedo
-                className={`cursor-pointer text-xl ${
+                className={`cursor-pointer hidden md:block  text-xl ${
                   isRepeat ? "text-[#FACD66]" : ""
                 }`}
                 onClick={handleRepeatToggle}
