@@ -107,7 +107,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
     const updateProgress = () => {
       if (audioRef.current) {
         const currentTime = audioRef.current.currentTime;
-        const duration = audioRef.current.duration || 0;
+        const duration = audioRef.current.duration || 1; // Prevent division by zero
         setProgress((currentTime / duration) * 100);
 
         // Handle repeat functionality
@@ -118,13 +118,16 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
       }
     };
 
-    if (audioRef.current) {
-      audioRef.current.addEventListener("timeupdate", updateProgress);
+    const audioElement = audioRef.current;
+
+    if (audioElement) {
+      audioElement.addEventListener("timeupdate", updateProgress);
     }
 
+    // Cleanup event listener
     return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener("timeupdate", updateProgress);
+      if (audioElement) {
+        audioElement.removeEventListener("timeupdate", updateProgress);
       }
     };
   }, [isRepeat]);

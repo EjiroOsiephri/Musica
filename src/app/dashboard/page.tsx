@@ -12,13 +12,12 @@ const DashboardPage = () => {
   return (
     <>
       <section className="lg:flex h-screen overflow-hidden">
-        <div className="lg:flex-grow lg:ml-24 overflow-y-auto h-screen pb-24 md:pb-28">
-          {/* Add pb-24 to account for the music player's height */}
+        <div className="lg:flex-grow lg:ml-24 h-[80vh] md:h-[85vh] overflow-y-auto pb-[120px]">
+          {/* pb-[120px] accounts for the height of the MusicPlayer */}
           <Dashboard />
           <MusicSection />
         </div>
         <MusicPlayer playlist={playlists.allPlaylists} />
-        {/* Ensure MusicPlayer remains fixed */}
       </section>
     </>
   );
