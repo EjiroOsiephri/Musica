@@ -1,14 +1,21 @@
 "use client";
 
-"use client";
-
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { FaHeart, FaBars } from "react-icons/fa";
+import {
+  FaHeart,
+  FaBars,
+  FaHome,
+  FaMusic,
+  FaVideo,
+  FaUser,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Logo from "../../public/logo.png";
+import Image from "next/image";
+import { FaRadio } from "react-icons/fa6";
 
 interface Playlist {
   title: string;
@@ -16,13 +23,6 @@ interface Playlist {
   duration: string;
   image: string;
   isLiked: boolean;
-}
-
-interface TimeComponents {
-  milliseconds: number;
-  seconds: number;
-  minutes: number;
-  hours: number;
 }
 
 function msToTime(duration: number): string {
@@ -47,15 +47,19 @@ export default function Dashboard() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
 
   const menuItems = [
-    { icon: "/Home.png", label: "Home", route: "/" },
-    { icon: "/playlist.svg", label: "My collections", route: "/collections" },
-    { icon: "/radio.svg", label: "Radio", route: "/radio" },
-    { icon: "/videos.svg", label: "Music Videos", route: "/videos" },
+    { icon: <FaHome size={30} />, label: "Home", route: "/" },
+    {
+      icon: <FaMusic size={25} />,
+      label: "My collections",
+      route: "/collections",
+    },
+    { icon: <FaRadio size={23} />, label: "Radio", route: "/radio" },
+    { icon: <FaVideo size={23} />, label: "Music Videos", route: "/videos" },
   ];
 
   const bottomItems = [
-    { icon: "/profile.svg", label: "Profile", route: "/profile" },
-    { icon: "/Logout.png", label: "Logout", route: "/logout" },
+    { icon: <FaUser size={25} />, label: "Profile", route: "/profile" },
+    { icon: <FaSignOutAlt size={25} />, label: "Logout", route: "/logout" },
   ];
 
   const handleLikeClick = (playlistIndex: number) => {
@@ -107,6 +111,8 @@ export default function Dashboard() {
 
       const playlistData = trackData.tracks || [];
 
+      console.log("Playlist Data:", playlistData);
+
       const playlistDataTracks = playlistData.slice(0, 3).map((track: any) => ({
         title: track.name,
         artist: track.artists[0]?.name || "Unknown Artist",
@@ -125,23 +131,8 @@ export default function Dashboard() {
     fetchPlaylists();
   }, []);
 
-  useEffect(() => {
-    fetchPlaylists();
-    const updateView = () => {
-      setIsMobileView(window.innerWidth < 1024);
-    };
-
-    updateView();
-    window.addEventListener("resize", updateView);
-
-    return () => {
-      window.removeEventListener("resize", updateView);
-    };
-  }, []);
-
   return (
     <div className="flex flex-col lg:flex-row text-white">
-      {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && isMobileView && (
         <motion.div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
@@ -152,7 +143,6 @@ export default function Dashboard() {
         ></motion.div>
       )}
 
-      {/* Sidebar */}
       <motion.div
         className={`sidebar fixed left-0 top-0 h-full w-64 lg:w-20 bg-[#1D2123] flex flex-col justify-between z-50 ${
           isSidebarOpen || !isMobileView ? "flex" : "hidden"
@@ -163,38 +153,30 @@ export default function Dashboard() {
         }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {/* Logo */}
         <div className="flex flex-col items-center space-y-10 py-6">
           <motion.div
             className="cursor-pointer"
             whileHover={{ scale: 1.1 }}
             onClick={() => router.push("/")}
           >
-            <Image src={Logo} alt="Logo" width={32} height={32} />
+            <img src={Logo.src} alt="Logo" width={32} height={32} />
           </motion.div>
 
-          {/* Menu Items */}
           <div className="flex flex-col items-start lg:items-center space-y-6 w-full px-4">
             {menuItems.map((item, index) => (
               <motion.div
                 key={index}
-                className="flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col"
+                className="flex items-center space-x-4 cursor-pointer w-52 lg:justify-center lg:space-x-0 lg:flex-col"
                 whileHover={{ scale: 1.1 }}
                 onClick={() => router.push(item.route)}
               >
-                <Image
-                  src={item.icon}
-                  alt={item.label}
-                  width={24}
-                  height={24}
-                />
+                {item.icon}
                 <span className="text-sm lg:hidden">{item.label}</span>
               </motion.div>
             ))}
           </div>
         </div>
 
-        {/* Bottom Items */}
         <div className="flex flex-col items-start lg:items-center space-y-6 w-full px-4 py-6">
           {bottomItems.map((item, index) => (
             <motion.div
@@ -203,14 +185,13 @@ export default function Dashboard() {
               whileHover={{ scale: 1.1 }}
               onClick={() => router.push(item.route)}
             >
-              <Image src={item.icon} alt={item.label} width={24} height={24} />
+              {item.icon}
               <span className="text-sm lg:hidden">{item.label}</span>
             </motion.div>
           ))}
         </div>
       </motion.div>
 
-      {/* Hamburger Menu */}
       {isMobileView && (
         <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#1D2123]">
           <FaBars
@@ -324,6 +305,7 @@ export default function Dashboard() {
                     src={playlist.image}
                     alt={playlist.title}
                     width={80}
+                    blurDataURL={playlist.image}
                     height={80}
                     className="rounded-lg"
                     loading="lazy"

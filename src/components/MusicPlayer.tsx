@@ -13,12 +13,33 @@ import {
 } from "react-icons/fa";
 import Image from "next/image";
 import albumCover from "../../public/Rectangle 26.png";
+import { useSelector } from "react-redux";
 
 const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const [volume, setVolume] = useState<number>(50);
+
+  const currentTrack = useSelector(
+    (state: {
+      music: {
+        currentTrack: {
+          preview: string;
+          image?: string;
+          title?: string;
+          artist?: string;
+        };
+      };
+    }) => state.music.currentTrack
+  );
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (currentTrack?.preview && audioRef.current) {
+      audioRef.current.src = currentTrack.preview;
+      audioRef.current.play();
+    }
+  }, [currentTrack]);
 
   // Toggle Play/Pause
   const handlePlayPause = () => {
@@ -89,15 +110,19 @@ const MusicPlayer = () => {
         {/* Album Cover and Song Info */}
         <div className="flex items-center space-x-4 -ml-4">
           <Image
-            src={albumCover}
+            src={currentTrack?.image || "/placeholder-image.png"}
             alt="Album Cover"
             width={70}
             height={60}
             className="rounded-md"
           />
           <div>
-            <h3 className="text-lg font-bold">Seasons in</h3>
-            <p className="text-sm text-gray-400">James</p>
+            <h3 className="text-lg max-w-96 font-bold">
+              {currentTrack?.title || "No Track Selected"}
+            </h3>
+            <p className="text-sm text-gray-400">
+              {currentTrack?.artist || "Unknown Artist"}
+            </p>
           </div>
         </div>
 
@@ -154,7 +179,7 @@ const MusicPlayer = () => {
       </div>
 
       {/* Audio Element */}
-      <audio ref={audioRef} src="/Asake-Dull-(TrendyBeatz.com).mp3"></audio>
+      <audio ref={audioRef} controls={false}></audio>
 
       {/* Consolidated Styles */}
       <style jsx>{`

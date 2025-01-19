@@ -4,10 +4,18 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setCurrentTrack } from "../utils/musicSlice";
 
 const Section = ({ title, musicData }: { title: string; musicData: any[] }) => {
+  const dispatch = useDispatch();
+
+  const handleTrackClick = (track: any) => {
+    dispatch(setCurrentTrack(track));
+  };
+
   return (
-    <div className="mb-8 md:mb-12">
+    <div className="mb-4 md:mb-5">
       <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
       <motion.div
         className="flex space-x-4 overflow-x-scroll scrollbar-hide"
@@ -21,10 +29,19 @@ const Section = ({ title, musicData }: { title: string; musicData: any[] }) => {
             className="shrink-0 w-[150px] cursor-pointer"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            onClick={() =>
+              handleTrackClick({
+                title: item.title,
+                artist: item.artist,
+                image: item.image,
+                preview: item.preview, // Make sure the API includes the preview URL
+              })
+            }
           >
             <Image
               src={item.image}
               alt={`${item.title} cover`}
+              blurDataURL={item.image}
               width={150}
               height={150}
               className="rounded-lg object-cover"
@@ -54,7 +71,6 @@ const MusicSection = () => {
       };
 
       try {
-        // Fetch Afrobeats recommendations
         const afrobeatsResponse = await axios.get(
           "https://spotify23.p.rapidapi.com/recommendations/",
           {
@@ -62,8 +78,8 @@ const MusicSection = () => {
             params: {
               limit: "100",
               seed_genres: "afrobeat",
-              seed_tracks: "0c6xIDDpzE81m2q797ordA", // Example track
-              seed_artists: "4NHQUGzhtTLFvgF5SZesLK", // Example artist
+              seed_tracks: "0c6xIDDpzE81m2q797ordA",
+              seed_artists: "4NHQUGzhtTLFvgF5SZesLK",
             },
           }
         );
@@ -73,10 +89,10 @@ const MusicSection = () => {
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
+          preview: track.preview_url,
         }));
         setAfrobeats(afrobeatsTracks);
 
-        // Fetch Nigerian tracks (e.g., Asake)
         const nigerianResponse = await axios.get(
           "https://spotify23.p.rapidapi.com/recommendations/",
           {
@@ -84,8 +100,8 @@ const MusicSection = () => {
             params: {
               limit: "100",
               seed_genres: "afrobeat",
-              seed_tracks: "3FAJ6O0NOHQV8Mc5Ri6ENp", // Example track by Asake
-              seed_artists: "3tVQdUvClmAT7URs9V3rsp", // Example artist: Asake
+              seed_tracks: "3FAJ6O0NOHQV8Mc5Ri6ENp",
+              seed_artists: "3tVQdUvClmAT7URs9V3rsp",
             },
           }
         );
@@ -95,10 +111,10 @@ const MusicSection = () => {
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
+          preview: track.preview_url,
         }));
         setNigerianTracks(nigerianTracks);
 
-        // Fetch Ed Sheeran tracks
         const edSheeranResponse = await axios.get(
           "https://spotify23.p.rapidapi.com/recommendations/",
           {
@@ -106,8 +122,8 @@ const MusicSection = () => {
             params: {
               limit: "100",
               seed_genres: "pop, indie pop",
-              seed_tracks: "4WNcduiCmDNfmTEz7JvmLv", // Example track by Ed Sheeran
-              seed_artists: "6eUKZXaKkcviH0Ku9w2n3V", // Ed Sheeran's Spotify ID
+              seed_tracks: "4WNcduiCmDNfmTEz7JvmLv",
+              seed_artists: "6eUKZXaKkcviH0Ku9w2n3V",
             },
           }
         );
@@ -117,6 +133,7 @@ const MusicSection = () => {
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
+          preview: track.preview_url,
         }));
         setEdSheeranTracks(edSheeranTracks);
       } catch (error) {
@@ -128,7 +145,7 @@ const MusicSection = () => {
   }, []);
 
   return (
-    <div className="px-8 py-6 overflow-y-auto h-[calc(100vh-4rem)]">
+    <div className="px-8 py-6 overflow-y-auto scrollbar-hide h-[calc(100vh-4rem)]">
       <Section title="Reccommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />
