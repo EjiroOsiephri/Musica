@@ -14,8 +14,30 @@ interface Playlist {
   title: string;
   artist: string;
   duration: string;
-  cover: string;
+  image: string;
   isLiked: boolean;
+}
+
+interface TimeComponents {
+  milliseconds: number;
+  seconds: number;
+  minutes: number;
+  hours: number;
+}
+
+function msToTime(duration: number): string {
+  const milliseconds: number = parseInt(((duration % 1000) / 100).toString());
+  const seconds: number = Math.floor((duration / 1000) % 60);
+  const minutes: number = Math.floor((duration / (1000 * 60)) % 60);
+  const hours: number = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+  const formattedHours: string = hours > 0 ? `${hours}:` : "";
+  const formattedMinutes: string =
+    minutes < 10 ? `0${minutes}` : minutes.toString();
+  const formattedSeconds: string =
+    seconds < 10 ? `0${seconds}` : seconds.toString();
+
+  return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
 }
 
 export default function Dashboard() {
@@ -66,9 +88,12 @@ export default function Dashboard() {
   const fetchPlaylists = async () => {
     const options = {
       method: "GET",
-      url: "https://spotify23.p.rapidapi.com/tracks/",
+      url: "https://spotify23.p.rapidapi.com/recommendations/",
       params: {
-        ids: "1JDwfM6fzE7HtRukcJSZDd", // Example track ID to get a playlist
+        limit: "20",
+        seed_tracks: "2Fxmhks0bxGSBdJ92vM42m",
+        seed_artists: "6eUKZXaKkcviH0Ku9w2n3V",
+        seed_genres: "pop,indie pop",
       },
       headers: {
         "x-rapidapi-key": "61685f4572mshf647551fc1d2d6bp1fc1bfjsn046cf7c541d7",
@@ -80,22 +105,17 @@ export default function Dashboard() {
       const response = await axios.request(options);
       const trackData = response.data;
 
-      console.log("Track data:", trackData);
+      const playlistData = trackData.tracks || [];
 
-      const formattedPlaylists = trackData.tracks.items
-        .slice(0, 3) // Adjust this value as needed for the number of tracks you want to display
-        .map((item: any) => ({
-          title: item.track.name,
-          artist: item.track.artists
-            .map((artist: any) => artist.name)
-            .join(", "), // Join multiple artists if there are any
-          duration: `${(item.track.duration_ms / 60000).toFixed(2)} min`, // Format duration to minutes
-          cover: item.track.album.images[0]?.url, // Get the album cover URL
-          previewUrl: item.track.preview_url, // Track preview URL
-          isLiked: false, // Default value for liked status
-        }));
+      const playlistDataTracks = playlistData.slice(0, 3).map((track: any) => ({
+        title: track.name,
+        artist: track.artists[0]?.name || "Unknown Artist",
+        image: track.album.images[0]?.url || "/placeholder-image.png",
+        duration: msToTime(track?.duration_ms),
+        isLiked: false,
+      }));
 
-      setPlaylists(formattedPlaylists);
+      setPlaylists(playlistDataTracks);
     } catch (error) {
       console.error("Error fetching playlists:", error);
     }
@@ -301,7 +321,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center space-x-4">
                   <Image
-                    src={playlist.cover}
+                    src={playlist.image}
                     alt={playlist.title}
                     width={80}
                     height={80}
