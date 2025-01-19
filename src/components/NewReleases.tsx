@@ -6,13 +6,36 @@ import Image from "next/image";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
+import { useSelector } from "react-redux";
+import { ClipLoader } from "react-spinners";
+import { GeminiSkeletonLoader } from "../utils/Loader";
 
-const Section = ({ title, musicData }: { title: string; musicData: any[] }) => {
+export const Section = ({
+  title,
+  musicData,
+}: {
+  title: string;
+  musicData: any[];
+}) => {
   const dispatch = useDispatch();
+  const [loaded, setLoaded] = useState<boolean[]>([]);
 
   const handleTrackClick = (track: any) => {
     dispatch(setCurrentTrack(track));
   };
+
+  const handleImageLoad = (index: number) => {
+    setLoaded((prev) => {
+      const newLoaded = [...prev];
+      newLoaded[index] = true;
+      return newLoaded;
+    });
+  };
+
+  useEffect(() => {
+    // Reset loaded state when musicData changes
+    setLoaded(Array(musicData.length).fill(false));
+  }, [musicData]);
 
   return (
     <div className="mb-4 md:mb-5">
@@ -34,21 +57,29 @@ const Section = ({ title, musicData }: { title: string; musicData: any[] }) => {
                 title: item.title,
                 artist: item.artist,
                 image: item.image,
-                preview: item.preview, // Make sure the API includes the preview URL
+                preview: item.preview,
               })
             }
           >
+            {!loaded[index] && <GeminiSkeletonLoader />} {/* Skeleton Loader */}
             <Image
               src={item.image}
               alt={`${item.title} cover`}
               blurDataURL={item.image}
               width={150}
               height={150}
-              className="rounded-lg object-cover"
+              className={`rounded-lg object-cover transition-opacity duration-300 ${
+                loaded[index] ? "opacity-100" : "opacity-0"
+              }`}
+              onLoad={() => handleImageLoad(index)}
               loading="lazy"
             />
-            <h3 className="text-white text-sm mt-2">{item.title}</h3>
-            <p className="text-gray-400 text-xs">{item.artist}</p>
+            {loaded[index] && (
+              <>
+                <h3 className="text-white text-sm mt-2">{item.title}</h3>
+                <p className="text-gray-400 text-xs">{item.artist}</p>
+              </>
+            )}
           </motion.div>
         ))}
       </motion.div>
@@ -60,6 +91,19 @@ const MusicSection = () => {
   const [afrobeats, setAfrobeats] = useState<any[]>([]);
   const [nigerianTracks, setNigerianTracks] = useState<any[]>([]);
   const [edSheeranTracks, setEdSheeranTracks] = useState<any[]>([]);
+
+  const currentTrack = useSelector(
+    (state: {
+      music: {
+        currentTrack: {
+          preview: string;
+          image?: string;
+          title?: string;
+          artist?: string;
+        };
+      };
+    }) => state.music.currentTrack
+  );
 
   useEffect(() => {
     const fetchMusicData = async () => {
@@ -149,6 +193,12 @@ const MusicSection = () => {
       <Section title="Reccommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />
+
+      {!currentTrack && (
+        <div className="mt-4 flex justify-center items-center">
+          <ClipLoader color="#4F46E5" size={50} />
+        </div>
+      )}
     </div>
   );
 };
