@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 
 const DashboardPage = () => {
   const playlists = useSelector((state: { playlists: any }) => state.playlists);
-  console.log("All Playlists:", playlists.allPlaylists);
 
   return (
     <>

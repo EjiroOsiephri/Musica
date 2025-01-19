@@ -7,7 +7,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
 import { useSelector } from "react-redux";
-import { ClipLoader } from "react-spinners";
+
 import { GeminiSkeletonLoader } from "../utils/Loader";
 import {
   setLocalAfrobeats,
@@ -15,103 +15,100 @@ import {
   setLocalNigerianTracks,
 } from "@/utils/playlistSlice";
 
-export const Section = ({
-  title,
-  musicData,
-}: {
-  title: string;
-  musicData: any[];
-}) => {
-  const dispatch = useDispatch();
-  const [loaded, setLoaded] = useState<boolean[]>([]);
+export const Section = React.memo(
+  ({ title, musicData }: { title: string; musicData: any[] }) => {
+    const dispatch = useDispatch();
+    const [loaded, setLoaded] = useState<boolean[]>([]);
 
-  const handleTrackClick = (track: any) => {
-    dispatch(setCurrentTrack(track));
-  };
+    const handleTrackClick = (track: any) => {
+      dispatch(setCurrentTrack(track));
+    };
 
-  const handleImageLoad = (index: number) => {
-    setLoaded((prev) => {
-      const newLoaded = [...prev];
-      newLoaded[index] = true;
-      return newLoaded;
-    });
-  };
+    const handleImageLoad = (index: number) => {
+      setLoaded((prev) => {
+        const newLoaded = [...prev];
+        newLoaded[index] = true;
+        return newLoaded;
+      });
+    };
 
-  useEffect(() => {
-    setLoaded(Array(musicData.length).fill(false));
-  }, [musicData]);
+    useEffect(() => {
+      setLoaded(Array(musicData.length).fill(false));
+    }, [musicData]);
 
-  return (
-    <div className="mb-2">
-      <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
-      <motion.div
-        className="flex space-x-4 overflow-x-scroll overflow-y-hidden scrollbar-hide"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {musicData.map((item, index) => (
-          <motion.div
-            key={index}
-            className="shrink-0 w-[150px] h-[290px] cursor-pointer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() =>
-              handleTrackClick({
-                title: item.title,
-                artist: item.artist,
-                image: item.image,
-                preview: item.preview,
-              })
-            }
-          >
-            {!loaded[index] && <GeminiSkeletonLoader />} {/* Skeleton Loader */}
-            <Image
-              src={item.image}
-              alt={`${item.title} cover`}
-              blurDataURL={item.image}
-              width={150}
-              height={150}
-              className={`rounded-lg object-cover transition-opacity duration-300 ${
-                loaded[index] ? "opacity-100" : "opacity-0"
-              }`}
-              onLoad={() => handleImageLoad(index)}
-              loading="lazy"
-            />
-            {loaded[index] && (
-              <>
-                <h3
-                  className="text-white text-sm mt-2 truncate"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 1, // Change this number for multi-line truncation
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {item.title}
-                </h3>
-                <p
-                  className="text-gray-400 text-xs truncate"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2, // Adjust to control lines before truncation
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {item.artist}
-                </p>
-              </>
-            )}
-          </motion.div>
-        ))}
-      </motion.div>
-    </div>
-  );
-};
+    return (
+      <div className="mb-2">
+        <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
+        <motion.div
+          className="flex space-x-4 overflow-x-scroll overflow-y-hidden scrollbar-hide"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          {musicData.map((item, index) => (
+            <motion.div
+              key={index}
+              className="shrink-0 w-[150px] h-[290px] cursor-pointer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() =>
+                handleTrackClick({
+                  title: item.title,
+                  artist: item.artist,
+                  image: item.image,
+                  preview: item.preview,
+                })
+              }
+            >
+              {!loaded[index] && <GeminiSkeletonLoader />}{" "}
+              {/* Skeleton Loader */}
+              <Image
+                src={item.image}
+                alt={`${item.title} cover`}
+                blurDataURL={item.image}
+                width={150}
+                height={150}
+                className={`rounded-lg object-cover transition-opacity duration-300 ${
+                  loaded[index] ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => handleImageLoad(index)}
+                loading="lazy"
+              />
+              {loaded[index] && (
+                <>
+                  <h3
+                    className="text-white text-sm mt-2 truncate"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 1, // Change this number for multi-line truncation
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p
+                    className="text-gray-400 text-xs truncate"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2, // Adjust to control lines before truncation
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {item.artist}
+                  </p>
+                </>
+              )}
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    );
+  }
+);
 
 const MusicSection = () => {
   const [afrobeats, setAfrobeats] = useState<any[]>([]);
@@ -223,12 +220,6 @@ const MusicSection = () => {
       <Section title="Reccommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />
-
-      {!currentTrack && (
-        <div className="mt-4 flex justify-center items-center">
-          <ClipLoader color="#4F46E5" size={50} />
-        </div>
-      )}
     </div>
   );
 };

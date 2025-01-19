@@ -119,8 +119,6 @@ export default function Dashboard() {
 
       const playlistData = trackData.tracks || [];
 
-      console.log("Playlist Data:", playlistData);
-
       const playlistDataTracks = playlistData.slice(0, 3).map((track: any) => ({
         title: track.name,
         artist: track.artists[0]?.name || "Unknown Artist",
