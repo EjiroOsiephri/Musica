@@ -33,15 +33,14 @@ export const Section = ({
   };
 
   useEffect(() => {
-    // Reset loaded state when musicData changes
     setLoaded(Array(musicData.length).fill(false));
   }, [musicData]);
 
   return (
-    <div className="mb-4 md:mb-5">
+    <div className="mb-2">
       <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
       <motion.div
-        className="flex space-x-4 overflow-x-scroll scrollbar-hide"
+        className="flex space-x-4 overflow-x-scroll overflow-y-hidden scrollbar-hide"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
@@ -49,7 +48,7 @@ export const Section = ({
         {musicData.map((item, index) => (
           <motion.div
             key={index}
-            className="shrink-0 w-[150px] cursor-pointer"
+            className="shrink-0 w-[150px] h-[290px] cursor-pointer"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() =>
@@ -76,8 +75,30 @@ export const Section = ({
             />
             {loaded[index] && (
               <>
-                <h3 className="text-white text-sm mt-2">{item.title}</h3>
-                <p className="text-gray-400 text-xs">{item.artist}</p>
+                <h3
+                  className="text-white text-sm mt-2 truncate"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 1, // Change this number for multi-line truncation
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className="text-gray-400 text-xs truncate"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2, // Adjust to control lines before truncation
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {item.artist}
+                </p>
               </>
             )}
           </motion.div>
