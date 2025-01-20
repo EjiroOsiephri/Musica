@@ -19,6 +19,9 @@ export const Section = React.memo(
   ({ title, musicData }: { title: string; musicData: any[] }) => {
     const dispatch = useDispatch();
     const [loaded, setLoaded] = useState<boolean[]>([]);
+    const searchResults = useSelector(
+      (state: any) => state.music.searchResults
+    ); // Access search results
 
     const handleTrackClick = (track: any) => {
       dispatch(setCurrentTrack(track));
@@ -33,8 +36,10 @@ export const Section = React.memo(
     };
 
     useEffect(() => {
-      setLoaded(Array(musicData.length).fill(false));
-    }, [musicData]);
+      setLoaded(Array(searchResults?.length).fill(false));
+    }, [searchResults]);
+
+    const dataToRender = searchResults?.length > 0 ? searchResults : musicData; // Fallback to default
 
     return (
       <div className="mb-2">
@@ -45,7 +50,7 @@ export const Section = React.memo(
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {musicData.map((item, index) => (
+          {dataToRender.map((item: any, index: number) => (
             <motion.div
               key={index}
               className="shrink-0 w-[150px] h-[250px] cursor-pointer"
@@ -60,8 +65,7 @@ export const Section = React.memo(
                 })
               }
             >
-              {!loaded[index] && <GeminiSkeletonLoader />}{" "}
-              {/* Skeleton Loader */}
+              {!loaded[index] && <GeminiSkeletonLoader />}
               <Image
                 src={item.image}
                 alt={`${item.title} cover`}
@@ -75,32 +79,9 @@ export const Section = React.memo(
                 loading="lazy"
               />
               {loaded[index] && (
-                <>
-                  <h3
-                    className="text-white text-sm mt-2 truncate"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 1, // Change this number for multi-line truncation
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p
-                    className="text-gray-400 text-xs truncate"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2, // Adjust to control lines before truncation
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item.artist}
-                  </p>
-                </>
+                <h3 className="text-white text-sm mt-2 truncate">
+                  {item.title}
+                </h3>
               )}
             </motion.div>
           ))}
@@ -131,7 +112,7 @@ const MusicSection = () => {
 
   useEffect(() => {
     const fetchMusicData = async () => {
-      const rapidApiKey = "61685f4572mshf647551fc1d2d6bp1fc1bfjsn046cf7c541d7";
+      const rapidApiKey = "9f77e3d43emsha1acd4403df8992p16bd27jsn2333d9fdc23c";
 
       const headers = {
         "x-rapidapi-key": rapidApiKey,

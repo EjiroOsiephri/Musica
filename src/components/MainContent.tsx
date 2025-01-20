@@ -17,6 +17,8 @@ import Logo from "../../public/logo.png";
 import Image from "next/image";
 import { FaRadio } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
+
+import { setSearchResults } from "@/utils/musicSlice";
 import { setCurrentTrack } from "@/utils/musicSlice";
 
 interface Playlist {
@@ -52,6 +54,51 @@ export default function Dashboard() {
 
   const handleTrackClick = (track: any) => {
     dispatch(setCurrentTrack(track));
+  };
+
+  const [isSearchMode, setIsSearchMode] = useState(false);
+
+  const handleSearch = async (searchTerm: string) => {
+    if (!searchTerm.trim()) return; // Ignore empty searches
+
+    const options = {
+      method: "GET",
+      url: `https://spotify23.p.rapidapi.com/search/`,
+      params: {
+        q: searchTerm,
+        type: "multi",
+        offset: 0,
+        limit: 15,
+        numberOfTopResults: 5,
+      },
+      headers: {
+        "x-rapidapi-key": "9f77e3d43emsha1acd4403df8992p16bd27jsn2333d9fdc23c", // Replace with your actual RapidAPI key
+        "x-rapidapi-host": "spotify23.p.rapidapi.com",
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      if (response.status === 429) {
+        throw new Error(
+          "Error 429: Too many requests. Unable to fetch data. Please try again later."
+        );
+      }
+
+      console.log(response.data);
+
+      const searchResults = response.data.tracks.items.map((track: any) => ({
+        title: track.name,
+        artist: track.artists[0]?.name || "Unknown Artist",
+        image: track.album.images[0]?.url || "/placeholder-image.png",
+        preview: track.preview_url || null,
+      }));
+
+      dispatch(setSearchResults(searchResults));
+      setIsSearchMode(true);
+    } catch (error) {
+      console.error("Error fetching search results from Spotify:", error);
+    }
   };
 
   const menuItems = [
@@ -108,7 +155,7 @@ export default function Dashboard() {
         seed_genres: "pop,indie pop",
       },
       headers: {
-        "x-rapidapi-key": "61685f4572mshf647551fc1d2d6bp1fc1bfjsn046cf7c541d7",
+        "x-rapidapi-key": "9f77e3d43emsha1acd4403df8992p16bd27jsn2333d9fdc23c",
         "x-rapidapi-host": "spotify23.p.rapidapi.com",
       },
     };
@@ -210,6 +257,7 @@ export default function Dashboard() {
               type="text"
               placeholder="Search..."
               className="bg-[#25292C] text-white rounded-lg px-4 py-2 text-sm"
+              onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
         </div>
@@ -226,6 +274,7 @@ export default function Dashboard() {
                 type="text"
                 placeholder="Search..."
                 className="bg-[#25292C] w-full text-white rounded-lg px-4 py-2 text-sm"
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
           )}
