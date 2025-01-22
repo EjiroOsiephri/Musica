@@ -59,45 +59,56 @@ export default function Dashboard() {
   const [isSearchMode, setIsSearchMode] = useState(false);
 
   const handleSearch = async (searchTerm: string) => {
-    if (!searchTerm.trim()) return; // Ignore empty searches
-
-    const options = {
-      method: "GET",
-      url: `https://spotify23.p.rapidapi.com/search/`,
-      params: {
-        q: searchTerm,
-        type: "multi",
-        offset: 0,
-        limit: 15,
-        numberOfTopResults: 5,
-      },
-      headers: {
-        "x-rapidapi-key": "9f77e3d43emsha1acd4403df8992p16bd27jsn2333d9fdc23c", // Replace with your actual RapidAPI key
-        "x-rapidapi-host": "spotify23.p.rapidapi.com",
-      },
-    };
+    if (!searchTerm.trim()) return;
 
     try {
-      const response = await axios.request(options);
-      if (response.status === 429) {
-        throw new Error(
-          "Error 429: Too many requests. Unable to fetch data. Please try again later."
-        );
+      const searchResponse = await axios.get(
+        `https://spotify23.p.rapidapi.com/search/`,
+        {
+          params: {
+            q: searchTerm,
+            type: "multi",
+            offset: 0,
+            limit: 1,
+          },
+          headers: {
+            "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
+            "x-rapidapi-host": "spotify23.p.rapidapi.com",
+          },
+        }
+      );
+
+      const albumId = searchResponse.data.albums.items[0]?.data?.uri
+        .match(/:[0-9a-zA-Z]+$/g)[0]
+        .slice(1);
+
+      if (!albumId) {
+        throw new Error("No album or track ID found.");
       }
 
-      console.log(response.data);
+      const albumResponse = await axios.get(
+        `https://spotify23.p.rapidapi.com/albums/`,
+        {
+          params: { ids: albumId },
+          headers: {
+            "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
+            "x-rapidapi-host": "spotify23.p.rapidapi.com",
+          },
+        }
+      );
 
-      const searchResults = response.data.tracks.items.map((track: any) => ({
+      const album = albumResponse.data.albums[0];
+      const tracks = album.tracks.items.map((track: any) => ({
         title: track.name,
         artist: track.artists[0]?.name || "Unknown Artist",
-        image: track.album.images[0]?.url || "/placeholder-image.png",
+        duration: msToTime(track.duration_ms),
+        image: album.images[0]?.url || "/placeholder-image.png",
         preview: track.preview_url || null,
       }));
 
-      dispatch(setSearchResults(searchResults));
-      setIsSearchMode(true);
+      dispatch(setSearchResults(tracks));
     } catch (error) {
-      console.error("Error fetching search results from Spotify:", error);
+      console.error("Error fetching song data:", error);
     }
   };
 
@@ -155,7 +166,7 @@ export default function Dashboard() {
         seed_genres: "pop,indie pop",
       },
       headers: {
-        "x-rapidapi-key": "9f77e3d43emsha1acd4403df8992p16bd27jsn2333d9fdc23c",
+        "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
         "x-rapidapi-host": "spotify23.p.rapidapi.com",
       },
     };
@@ -257,7 +268,11 @@ export default function Dashboard() {
               type="text"
               placeholder="Search..."
               className="bg-[#25292C] text-white rounded-lg px-4 py-2 text-sm"
-              onChange={(e) => handleSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch(e.currentTarget.value);
+                }
+              }}
             />
           </div>
         </div>
@@ -274,7 +289,11 @@ export default function Dashboard() {
                 type="text"
                 placeholder="Search..."
                 className="bg-[#25292C] w-full text-white rounded-lg px-4 py-2 text-sm"
-                onChange={(e) => handleSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch(e.currentTarget.value);
+                  }
+                }}
               />
             </div>
           )}

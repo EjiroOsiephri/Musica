@@ -21,7 +21,7 @@ export const Section = React.memo(
     const [loaded, setLoaded] = useState<boolean[]>([]);
     const searchResults = useSelector(
       (state: any) => state.music.searchResults
-    ); // Access search results
+    );
 
     const handleTrackClick = (track: any) => {
       dispatch(setCurrentTrack(track));
@@ -36,10 +36,10 @@ export const Section = React.memo(
     };
 
     useEffect(() => {
-      setLoaded(Array(searchResults?.length).fill(false));
-    }, [searchResults]);
-
-    const dataToRender = searchResults?.length > 0 ? searchResults : musicData; // Fallback to default
+      if (musicData) {
+        setLoaded(Array(musicData.length).fill(false));
+      }
+    }, [musicData]);
 
     return (
       <div className="mb-2">
@@ -50,7 +50,7 @@ export const Section = React.memo(
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {dataToRender.map((item: any, index: number) => (
+          {musicData.map((item: any, index: number) => (
             <motion.div
               key={index}
               className="shrink-0 w-[150px] h-[250px] cursor-pointer"
@@ -91,6 +91,76 @@ export const Section = React.memo(
   }
 );
 
+export const SearchSection = React.memo(({ title }: { title: string }) => {
+  const dispatch = useDispatch();
+  const [loaded, setLoaded] = useState<boolean[]>([]);
+  const searchResults = useSelector((state: any) => state.music.searchResults);
+
+  const handleTrackClick = (track: any) => {
+    dispatch(setCurrentTrack(track));
+  };
+
+  const handleImageLoad = (index: number) => {
+    setLoaded((prev) => {
+      const newLoaded = [...prev];
+      newLoaded[index] = true;
+      return newLoaded;
+    });
+  };
+
+  useEffect(() => {
+    setLoaded(Array(searchResults?.length).fill(false));
+  }, [searchResults]);
+
+  const dataToRender = searchResults?.length > 0 && searchResults;
+
+  return (
+    <div className="mb-2">
+      <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
+      <motion.div
+        className="flex space-x-4 overflow-x-scroll overflow-y-hidden scrollbar-hide"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {dataToRender.map((item: any, index: number) => (
+          <motion.div
+            key={index}
+            className="shrink-0 w-[150px] h-[250px] cursor-pointer"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() =>
+              handleTrackClick({
+                title: item.title,
+                artist: item.artist,
+                image: item.image,
+                preview: item.preview,
+              })
+            }
+          >
+            {!loaded[index] && <GeminiSkeletonLoader />}
+            <Image
+              src={item.image}
+              alt={`${item.title} cover`}
+              blurDataURL={item.image}
+              width={150}
+              height={150}
+              className={`rounded-lg object-cover transition-opacity duration-300 ${
+                loaded[index] ? "opacity-100" : "opacity-0"
+              }`}
+              onLoad={() => handleImageLoad(index)}
+              loading="lazy"
+            />
+            {loaded[index] && (
+              <h3 className="text-white text-sm mt-2 truncate">{item.title}</h3>
+            )}
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  );
+});
+
 const MusicSection = () => {
   const [afrobeats, setAfrobeats] = useState<any[]>([]);
   const [nigerianTracks, setNigerianTracks] = useState<any[]>([]);
@@ -112,7 +182,7 @@ const MusicSection = () => {
 
   useEffect(() => {
     const fetchMusicData = async () => {
-      const rapidApiKey = "9f77e3d43emsha1acd4403df8992p16bd27jsn2333d9fdc23c";
+      const rapidApiKey = process.env.NEXT_PUBLIC_RAPID_API_KEY;
 
       const headers = {
         "x-rapidapi-key": rapidApiKey,
@@ -201,6 +271,7 @@ const MusicSection = () => {
       <Section title="Reccommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />
+      <SearchSection title="Search Results" />
     </div>
   );
 };

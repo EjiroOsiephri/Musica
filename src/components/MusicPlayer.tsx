@@ -40,7 +40,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
     if (currentTrack?.preview && audioRef.current) {
       audioRef.current.src = currentTrack.preview;
       audioRef.current.play();
-      setIsPlaying(true); // Automatically start playing
+      setIsPlaying(true);
     }
   }, [currentTrack]);
 
