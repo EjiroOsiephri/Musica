@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   FaHeart,
   FaBars,
@@ -55,8 +55,6 @@ export default function Dashboard() {
   const handleTrackClick = (track: any) => {
     dispatch(setCurrentTrack(track));
   };
-
-  const [isSearchMode, setIsSearchMode] = useState(false);
 
   const handleSearch = async (searchTerm: string) => {
     if (!searchTerm.trim()) return;
@@ -113,7 +111,7 @@ export default function Dashboard() {
   };
 
   const menuItems = [
-    { icon: <FaHome size={30} />, label: "Home", route: "/" },
+    { icon: <FaHome size={30} />, label: "Home", route: "/dashboard" },
     {
       icon: <FaMusic size={25} />,
       label: "My collections",
@@ -196,6 +194,8 @@ export default function Dashboard() {
     fetchPlaylists();
   }, []);
 
+  const currentRoute = usePathname();
+
   return (
     <div className="flex flex-col lg:flex-row text-white">
       {isSidebarOpen && isMobileView && (
@@ -231,7 +231,9 @@ export default function Dashboard() {
             {menuItems.map((item, index) => (
               <motion.div
                 key={index}
-                className="flex items-center space-x-4 cursor-pointer w-52 lg:justify-center lg:space-x-0 lg:flex-col"
+                className={`flex items-center space-x-4 cursor-pointer w-52 lg:justify-center lg:space-x-0 lg:flex-col ${
+                  currentRoute === item.route ? "text-yellow-500" : ""
+                }`}
                 whileHover={{ scale: 1.1 }}
                 onClick={() => router.push(item.route)}
               >
@@ -246,7 +248,9 @@ export default function Dashboard() {
           {bottomItems.map((item, index) => (
             <motion.div
               key={index}
-              className="flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col"
+              className={`flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col  ${
+                currentRoute === item.route ? "text-yellow-500" : ""
+              }`}
               whileHover={{ scale: 1.1 }}
               onClick={() => router.push(item.route)}
             >
