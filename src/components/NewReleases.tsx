@@ -41,6 +41,8 @@ export const Section = React.memo(
       }
     }, [musicData]);
 
+    console.log("API Key:", process.env.NEXT_PUBLIC_RAPID_API_KEY);
+
     return (
       <div className="mb-2">
         <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
