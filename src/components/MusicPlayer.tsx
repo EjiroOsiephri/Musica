@@ -124,7 +124,6 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
       audioElement.addEventListener("timeupdate", updateProgress);
     }
 
-    // Cleanup event listener
     return () => {
       if (audioElement) {
         audioElement.removeEventListener("timeupdate", updateProgress);

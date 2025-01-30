@@ -43,6 +43,8 @@ export const Section = React.memo(
 
     console.log("API Key:", process.env.NEXT_PUBLIC_RAPID_API_KEY);
 
+    console.log(musicData);
+
     return (
       <div className="mb-2">
         <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
@@ -52,7 +54,7 @@ export const Section = React.memo(
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {musicData.map((item: any, index: number) => (
+          {musicData?.map((item: any, index: number) => (
             <motion.div
               key={index}
               className="shrink-0 w-[150px] h-[250px] cursor-pointer"
@@ -116,6 +118,8 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
 
   const dataToRender = searchResults?.length > 0 && searchResults;
 
+  console.log(dataToRender);
+
   return (
     <div className="mb-2">
       <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
@@ -125,7 +129,7 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {dataToRender.map((item: any, index: number) => (
+        {dataToRender?.map((item: any, index: number) => (
           <motion.div
             key={index}
             className="shrink-0 w-[150px] h-[250px] cursor-pointer"
