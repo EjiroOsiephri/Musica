@@ -70,8 +70,7 @@ export default function Dashboard() {
             limit: 1,
           },
           headers: {
-            "x-rapidapi-key":
-              "4630179d98mshe00c5ce74c0ec0bp1c0a0djsn8f770d9cf2a8",
+            "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
             "x-rapidapi-host": "spotify23.p.rapidapi.com",
           },
         }
@@ -90,8 +89,7 @@ export default function Dashboard() {
         {
           params: { ids: albumId },
           headers: {
-            "x-rapidapi-key":
-              "4630179d98mshe00c5ce74c0ec0bp1c0a0djsn8f770d9cf2a8",
+            "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
             "x-rapidapi-host": "spotify23.p.rapidapi.com",
           },
         }
@@ -166,7 +164,7 @@ export default function Dashboard() {
         seed_genres: "pop,indie pop",
       },
       headers: {
-        "x-rapidapi-key": "4630179d98mshe00c5ce74c0ec0bp1c0a0djsn8f770d9cf2a8",
+        "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPID_API_KEY,
         "x-rapidapi-host": "spotify23.p.rapidapi.com",
       },
     };
