@@ -207,7 +207,7 @@ const MusicSection = () => {
         const afrobeatsTracks = afrobeatsData.map((track: any) => ({
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
-          image: track.album.images[0]?.url || "/placeholder-image.png",
+          image: track.album.images[0]?.url || "/placeholder.png",
           preview: track.preview_url,
         }));
         setAfrobeats(afrobeatsTracks);
