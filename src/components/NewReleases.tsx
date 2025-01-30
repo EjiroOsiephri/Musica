@@ -41,10 +41,6 @@ export const Section = React.memo(
       }
     }, [musicData]);
 
-    console.log("API Key:", process.env.NEXT_PUBLIC_RAPID_API_KEY);
-
-    console.log(musicData);
-
     return (
       <div className="mb-2">
         <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
@@ -188,7 +184,7 @@ const MusicSection = () => {
 
   useEffect(() => {
     const fetchMusicData = async () => {
-      const rapidApiKey = process.env.NEXT_PUBLIC_RAPID_API_KEY;
+      const rapidApiKey = "4630179d98mshe00c5ce74c0ec0bp1c0a0djsn8f770d9cf2a8";
 
       const headers = {
         "x-rapidapi-key": rapidApiKey,
