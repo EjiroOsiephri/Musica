@@ -205,11 +205,13 @@ const MusicSection = () => {
           }
         );
 
+        console.log("API Response:", afrobeatsResponse?.data);
+
         const afrobeatsData = afrobeatsResponse?.data?.tracks || [];
-        const afrobeatsTracks = afrobeatsData.map((track: any) => ({
+        const afrobeatsTracks = afrobeatsData?.map((track: any) => ({
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
-          image: track.album.images[0]?.url || "/placeholder.png",
+          image: track.album.images[0]?.url || "/placeholder-image.png",
           preview: track.preview_url,
         }));
         setAfrobeats(afrobeatsTracks);
@@ -229,7 +231,7 @@ const MusicSection = () => {
         );
 
         const nigerianData = nigerianResponse?.data?.tracks || [];
-        const nigerianTracks = nigerianData.map((track: any) => ({
+        const nigerianTracks = nigerianData?.map((track: any) => ({
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
@@ -252,7 +254,7 @@ const MusicSection = () => {
         );
 
         const edSheeranData = edSheeranResponse?.data?.tracks || [];
-        const edSheeranTracks = edSheeranData.map((track: any) => ({
+        const edSheeranTracks = edSheeranData?.map((track: any) => ({
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",

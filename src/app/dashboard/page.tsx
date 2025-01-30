@@ -17,7 +17,7 @@ const DashboardPage = () => {
           <Dashboard />
           <MusicSection />
         </div>
-        <MusicPlayer playlist={playlists.allPlaylists} />
+        <MusicPlayer playlist={playlists?.allPlaylists} />
       </section>
     </>
   );
