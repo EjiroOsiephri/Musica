@@ -19,9 +19,6 @@ export const Section = React.memo(
   ({ title, musicData }: { title: string; musicData: any[] }) => {
     const dispatch = useDispatch();
     const [loaded, setLoaded] = useState<boolean[]>([]);
-    const searchResults = useSelector(
-      (state: any) => state.music.searchResults
-    );
 
     const handleTrackClick = (track: any) => {
       dispatch(setCurrentTrack(track));
@@ -114,8 +111,6 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
 
   const dataToRender = searchResults?.length > 0 && searchResults;
 
-  console.log(dataToRender);
-
   return (
     <div className="mb-2">
       <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
@@ -125,39 +120,44 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {dataToRender?.map((item: any, index: number) => (
-          <motion.div
-            key={index}
-            className="shrink-0 w-[150px] h-[250px] cursor-pointer"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() =>
-              handleTrackClick({
-                title: item.title,
-                artist: item.artist,
-                image: item.image,
-                preview: item.preview,
-              })
-            }
-          >
-            {!loaded[index] && <GeminiSkeletonLoader />}
-            <Image
-              src={item.image}
-              alt={`${item.title} cover`}
-              blurDataURL={item.image}
-              width={150}
-              height={150}
-              className={`rounded-lg object-cover transition-opacity duration-300 ${
-                loaded[index] ? "opacity-100" : "opacity-0"
-              }`}
-              onLoad={() => handleImageLoad(index)}
-              loading="lazy"
-            />
-            {loaded[index] && (
-              <h3 className="text-white text-sm mt-2 truncate">{item.title}</h3>
-            )}
-          </motion.div>
-        ))}
+        {dataToRender ? (
+          dataToRender.map((item: any, index: number) => (
+            <motion.div
+              key={index}
+              className="shrink-0 w-[150px] h-[250px] cursor-pointer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() =>
+                handleTrackClick({
+                  title: item.title,
+                  artist: item.artist,
+                  image: item.image,
+                  preview: item.preview,
+                })
+              }
+            >
+              {!loaded[index] && <GeminiSkeletonLoader />}
+              <Image
+                src={item?.image || "/placeholder-image.png"}
+                alt={`${item?.title || "Unknown"} cover`}
+                width={150}
+                height={150}
+                className={`rounded-lg object-cover transition-opacity duration-300 ${
+                  loaded[index] ? "opacity-100" : "opacity-0"
+                }`}
+                onLoad={() => handleImageLoad(index)}
+                loading="lazy"
+              />
+              {loaded[index] && (
+                <h3 className="text-white text-sm mt-2 truncate">
+                  {item?.title || "Unknown Title"}
+                </h3>
+              )}
+            </motion.div>
+          ))
+        ) : (
+          <p className="text-white">No search results found</p>
+        )}
       </motion.div>
     </div>
   );
@@ -184,7 +184,7 @@ const MusicSection = () => {
 
   useEffect(() => {
     const fetchMusicData = async () => {
-      const rapidApiKey = "4630179d98mshe00c5ce74c0ec0bp1c0a0djsn8f770d9cf2a8";
+      const rapidApiKey = process.env.NEXT_PUBLIC_RAPID_API_KEY;
 
       const headers = {
         "x-rapidapi-key": rapidApiKey,
@@ -268,7 +268,7 @@ const MusicSection = () => {
     };
 
     fetchMusicData();
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="px-8 py-6 scrollbar-hide h-[calc(100vh-4rem)]">
