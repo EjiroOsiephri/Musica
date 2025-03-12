@@ -205,8 +205,6 @@ const MusicSection = () => {
           }
         );
 
-        console.log("API Response:", afrobeatsResponse?.data);
-
         const afrobeatsData = afrobeatsResponse?.data?.tracks || [];
         const afrobeatsTracks = afrobeatsData?.map((track: any) => ({
           title: track.name,
