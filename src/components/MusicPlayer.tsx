@@ -9,6 +9,7 @@ import {
   FaVolumeUp,
   FaRandom,
   FaRedo,
+  FaPlus,
 } from "react-icons/fa";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
@@ -153,6 +154,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                   {currentTrack.artist || "Unknown Artist"}
                 </p>
               </div>
+              <FaPlus className="hidden border-2 border-white rounded-full text-xl p-1 cursor-pointer " />
             </div>
 
             {/* Controls */}
@@ -180,6 +182,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                 className="cursor-pointer text-xl"
                 onClick={handleNext}
               />
+              <FaPlus className="md:block border-2 border-white rounded-full text-xl p-1 cursor-pointer " />
               <FaRedo
                 className={`cursor-pointer hidden md:block  text-xl ${
                   isRepeat ? "text-[#FACD66]" : ""
