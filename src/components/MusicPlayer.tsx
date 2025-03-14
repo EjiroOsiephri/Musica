@@ -134,13 +134,13 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
 
   return (
     <>
-      {currentTrack && (
+      {
         <div className="fixed z-10 bottom-0 right-0 w-full bg-[#1D2123]/80 text-white px-8 py-4 flex flex-col items-center backdrop-blur-md shadow-lg">
           <div className="flex items-center justify-between max-w-7xl w-full">
             {/* Album Info */}
             <div className="flex items-center space-x-4 -ml-4">
               <Image
-                src={currentTrack.image || "/placeholder-image.png"}
+                src={currentTrack?.image || "/placeholder-image.png"}
                 alt="Album Cover"
                 width={70}
                 height={60}
@@ -148,10 +148,10 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
               />
               <div>
                 <h3 className="text-lg font-bold">
-                  {currentTrack.title || "No Track Selected"}
+                  {currentTrack?.title || "No Track Selected"}
                 </h3>
                 <p className="text-sm text-gray-400">
-                  {currentTrack.artist || "Unknown Artist"}
+                  {currentTrack?.artist || "Unknown Artist"}
                 </p>
               </div>
               <FaPlus className="hidden border-2 border-white rounded-full text-xl p-1 cursor-pointer " />
@@ -225,7 +225,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
 
           <audio ref={audioRef} controls={false}></audio>
         </div>
-      )}
+      }
       <style jsx>{`
         input[type="range"]::-webkit-slider-thumb {
           width: 14px;
