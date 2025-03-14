@@ -358,14 +358,6 @@ export default function Dashboard() {
                 objectFit="cover"
                 className="z-0  opacity-50"
               />
-              <Image
-                src="/Pexels Photo by Eric Esma.png"
-                alt="Artist"
-                width={600}
-                height={900}
-                objectFit="contain"
-                className="z-10 ml-[2500px] -mt-[60px] hidden xl:block opacity-0 md:opacity-100"
-              />
             </div>
           </div>
         </section>
