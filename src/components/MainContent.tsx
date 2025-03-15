@@ -342,7 +342,7 @@ export default function Dashboard() {
                   <motion.div
                     className="rounded-full p-2 cursor-pointer"
                     whileTap={{ scale: 1.2 }}
-                    onClick={() => console.log("Like clicked")}
+                    onClick={() => console.log("Like has been clicked")}
                   >
                     <FaHeart className="text-white" />
                   </motion.div>
