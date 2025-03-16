@@ -26,6 +26,9 @@ export default function SignUpComponent() {
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<
+    "google" | "facebook" | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -76,6 +79,8 @@ export default function SignUpComponent() {
   };
 
   const handleOAuthLogin = async (provider: "google" | "facebook") => {
+    setOauthLoading(provider);
+
     const clientId =
       provider === "google"
         ? process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
@@ -167,33 +172,80 @@ export default function SignUpComponent() {
             disabled={loading}
             className="w-full py-3 mb-6 bg-gradient-to-r from-[#FACD66] to-[#FACD66] text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
-            {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? (
+              <motion.div className="flex py-1.5 justify-center space-x-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-white rounded-full"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
 
         <div className="mt-6 flex justify-center items-center gap-4">
           <button
             onClick={() => handleOAuthLogin("google")}
+            disabled={oauthLoading === "google"}
             className="flex items-center justify-center w-40 py-2 bg-white text-black rounded-lg shadow-md hover:scale-105 transition-transform"
           >
-            <FaGoogle className="mr-2" /> Google
+            {oauthLoading === "google" ? (
+              <motion.div className="flex py-1.5 space-x-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-black rounded-full"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <>
+                <FaGoogle className="mr-2" /> Google
+              </>
+            )}
           </button>
           <button
             onClick={() => handleOAuthLogin("facebook")}
+            disabled={oauthLoading === "facebook"}
             className="flex items-center justify-center w-40 py-2 bg-[#A4C7C6] text-white rounded-lg shadow-md hover:scale-105 transition-transform"
           >
-            <FaFacebook className="mr-2" /> Facebook
+            {oauthLoading === "facebook" ? (
+              <motion.div className="flex py-1.5 space-x-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-white rounded-full"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <>
+                <FaFacebook className="mr-2" /> Facebook
+              </>
+            )}
           </button>
-        </div>
-
-        <div className="mt-6 text-center text-gray-300">
-          Already have an account?{" "}
-          <a
-            href="/authform/signin"
-            className="text-[#FACD66] underline hover:text-white"
-          >
-            Sign In Now
-          </a>
         </div>
       </div>
     </motion.div>
