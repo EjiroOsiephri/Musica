@@ -6,15 +6,18 @@ import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-interface SigninForm {
+interface SignInForm {
   email: string;
   password: string;
 }
 
 export default function SignInComponent() {
   const router = useRouter();
-  const [form, setForm] = useState<SigninForm>({ email: "", password: "" });
+  const [form, setForm] = useState<SignInForm>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<
+    "google" | "facebook" | null
+  >(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -32,17 +35,16 @@ export default function SignInComponent() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSignin = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
-        email: form.email,
-        password: form.password,
-      });
-
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/signin`,
+        form
+      );
       localStorage.setItem("token", res.data.access_token);
       router.push("/dashboard");
     } catch (err: any) {
@@ -53,6 +55,8 @@ export default function SignInComponent() {
   };
 
   const handleOAuthLogin = async (provider: "google" | "facebook") => {
+    setOauthLoading(provider);
+
     const clientId =
       provider === "google"
         ? process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
@@ -85,12 +89,12 @@ export default function SignInComponent() {
           Musica
         </h1>
         <h2 className="text-3xl font-bold mb-6 text-center text-white">
-          Welcome Back
+          Sign In to Your Account
         </h2>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-        <form onSubmit={handleSignin}>
+        <form onSubmit={handleSignIn}>
           <input
             type="email"
             name="email"
@@ -112,27 +116,84 @@ export default function SignInComponent() {
             disabled={loading}
             className="w-full py-3 mb-6 bg-gradient-to-r from-[#FACD66] to-[#FACD66] text-white rounded-lg shadow-lg hover:scale-105 transition-transform"
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? (
+              <motion.div className="flex py-1.5 justify-center space-x-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-white rounded-full"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 
         <div className="mt-6 flex justify-center items-center gap-4">
           <button
             onClick={() => handleOAuthLogin("google")}
+            disabled={oauthLoading === "google"}
             className="flex items-center justify-center w-40 py-2 bg-white text-black rounded-lg shadow-md hover:scale-105 transition-transform"
           >
-            <FaGoogle className="mr-2" /> Google
+            {oauthLoading === "google" ? (
+              <motion.div className="flex py-1.5 space-x-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-black rounded-full"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <>
+                <FaGoogle className="mr-2" /> Google
+              </>
+            )}
           </button>
           <button
             onClick={() => handleOAuthLogin("facebook")}
+            disabled={oauthLoading === "facebook"}
             className="flex items-center justify-center w-40 py-2 bg-[#A4C7C6] text-white rounded-lg shadow-md hover:scale-105 transition-transform"
           >
-            <FaFacebook className="mr-2" /> Facebook
+            {oauthLoading === "facebook" ? (
+              <motion.div className="flex py-1.5 space-x-2">
+                {[...Array(3)].map((_, i) => (
+                  <motion.span
+                    key={i}
+                    className="w-2 h-2 bg-white rounded-full"
+                    animate={{ opacity: [0, 1, 0] }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <>
+                <FaFacebook className="mr-2" /> Facebook
+              </>
+            )}
           </button>
         </div>
 
         <div className="mt-6 text-center text-gray-300">
-          Need an account?{" "}
+          Don't have an account?{" "}
           <a
             href="/authform/signup"
             className="text-[#FACD66] underline hover:text-white"
