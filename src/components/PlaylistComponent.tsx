@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FaHeart } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FiSearch } from "react-icons/fi";
 import ImageLead from "../../public/Lead-image (1).png";
 import Sidebar from "./SideBar";
 import MusicPlayer from "./MusicPlayer";
@@ -26,9 +27,9 @@ const PlaylistComponent = () => {
     <>
       <Sidebar />
       {/* Parent Div with Background Image */}
-      <div className="relative min-h-screen text-white pb-24">
+      <div className="relative min-h-screen text-white pb-32">
         {" "}
-        {/* Added padding-bottom */}
+        {/* Increased bottom padding */}
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
@@ -40,9 +41,19 @@ const PlaylistComponent = () => {
           />
         </div>
         {/* Content */}
-        <div className="relative pl-20 lg:pl-24 p-6 bg-[#121212]/80 min-h-screen">
+        <div className="relative pl-20 lg:pl-24 p-8 bg-[#121212]/80 min-h-screen space-y-12">
+          {/* Search Bar */}
+          <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 max-w-md">
+            <FiSearch className="text-gray-400 text-lg mr-2" />
+            <input
+              type="text"
+              placeholder="Search playlists..."
+              className="bg-transparent outline-none text-white placeholder-gray-400 flex-1"
+            />
+          </div>
+
           {/* Album Section */}
-          <div className="flex gap-6">
+          <div className="flex flex-col md:flex-row gap-10">
             {/* Album Image */}
             <div className="w-56 h-56 relative rounded-lg overflow-hidden">
               <Image
@@ -54,11 +65,11 @@ const PlaylistComponent = () => {
             </div>
 
             {/* Album Details */}
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col space-y-4">
               <h1 className="text-4xl font-semibold text-gray-200">
                 Tomorrow’s tunes
               </h1>
-              <p className="text-gray-400 max-w-md text-sm">
+              <p className="text-gray-400 max-w-md text-sm leading-relaxed">
                 A handpicked collection of fresh sounds and timeless classics,
                 carefully curated to set the perfect vibe. Whether you're
                 unwinding or getting pumped for the day, these tunes will keep
@@ -67,11 +78,11 @@ const PlaylistComponent = () => {
               <p className="text-gray-500 text-sm">64 songs ~ 16 hrs+</p>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-4 mt-4">
-                <button className="bg-yellow-500 text-black font-semibold px-4 py-2 rounded-lg">
+              <div className="flex items-center gap-6 mt-4">
+                <button className="bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-lg">
                   Play all
                 </button>
-                <button className="bg-gray-700 text-white px-4 py-2 rounded-lg">
+                <button className="bg-gray-700 text-white px-5 py-2.5 rounded-lg">
                   Add to collection
                 </button>
                 <FaHeart className="text-gray-400 text-2xl cursor-pointer" />
@@ -80,8 +91,9 @@ const PlaylistComponent = () => {
           </div>
 
           {/* Song List */}
-          <div className="mt-8">
-            <div className="grid grid-cols-4 text-gray-400 text-sm pb-2 border-b border-gray-700 px-4">
+          <div className="mt-16 space-y-4">
+            {/* Increased margin for better spacing */}
+            <div className="grid grid-cols-4 text-gray-400 text-sm pb-3 border-b border-gray-700 px-4">
               <p>Title</p>
               <p>Album</p>
               <p>Duration</p>
@@ -90,7 +102,7 @@ const PlaylistComponent = () => {
             {songs.map((song, index) => (
               <div
                 key={index}
-                className="grid grid-cols-4 items-center p-4 bg-gray-900/80 rounded-lg mb-2"
+                className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
               >
                 {/* Song Image & Title */}
                 <div className="flex items-center gap-4">
