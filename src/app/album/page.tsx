@@ -1,9 +1,10 @@
 import React from "react";
+import PlaylistComponent from "@/components/PlaylistComponent";
 
 const view = () => {
   return (
     <>
-      <h1 className="text-white">What is the vibe</h1>
+      <PlaylistComponent />
     </>
   );
 };
