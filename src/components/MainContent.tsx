@@ -114,8 +114,8 @@ export default function Dashboard() {
     { icon: <FaHome size={30} />, label: "Home", route: "/dashboard" },
     {
       icon: <FaMusic size={25} />,
-      label: "My collections",
-      route: "/collections",
+      label: "My playlists",
+      route: "/album",
     },
     { icon: <FaRadio size={23} />, label: "Radio", route: "/radio" },
     { icon: <FaVideo size={23} />, label: "Music Videos", route: "/videos" },
