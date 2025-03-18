@@ -15,8 +15,7 @@ import {
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import toast from "react-hot-toast";
 
 // Removed toast.configure() as it is no longer required in the latest react-toastify API
 
