@@ -56,6 +56,29 @@ export default function Dashboard() {
     dispatch(setCurrentTrack(track));
   };
 
+  useEffect(() => {
+    const extractToken = () => {
+      if (typeof window !== "undefined") {
+        const hashParams = new URLSearchParams(
+          window.location.hash.substring(1)
+        );
+
+        const token = hashParams.get("access_token");
+
+        if (token) {
+          localStorage.setItem("token", token);
+
+          // Clean up URL
+          window.history.replaceState(null, "", window.location.pathname);
+
+          router.push("/dashboard");
+        }
+      }
+    };
+
+    extractToken();
+  }, [router]);
+
   const handleSearch = async (searchTerm: string) => {
     if (!searchTerm.trim()) return;
 

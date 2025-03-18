@@ -31,17 +31,6 @@ export default function SignUpComponent() {
   >(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Capture token from URL (OAuth login)
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-
-    if (token) {
-      localStorage.setItem("token", token);
-      router.push("/dashboard");
-    }
-  }, []);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -88,7 +77,7 @@ export default function SignUpComponent() {
 
     const authUrl =
       provider === "google"
-        ? `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}&response_type=token&scope=email profile`
+        ? `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}&response_type=token&scope=email%20profile`
         : `https://www.facebook.com/v12.0/dialog/oauth?client_id=${clientId}&redirect_uri=${process.env.NEXT_PUBLIC_REDIRECT_URI}&scope=email`;
 
     window.location.href = authUrl;
