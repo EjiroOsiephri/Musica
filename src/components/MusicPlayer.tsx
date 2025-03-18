@@ -10,16 +10,22 @@ import {
   FaRandom,
   FaRedo,
   FaPlus,
+  FaCheck,
 } from "react-icons/fa";
 import Image from "next/image";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Removed toast.configure() as it is no longer required in the latest react-toastify API
 
 const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState<number>(0);
   const [volume, setVolume] = useState<number>(50);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
 
   const currentTrack = useSelector(
     (state: {
@@ -108,10 +114,9 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
     const updateProgress = () => {
       if (audioRef.current) {
         const currentTime = audioRef.current.currentTime;
-        const duration = audioRef.current.duration || 1; // Prevent division by zero
+        const duration = audioRef.current.duration || 1;
         setProgress((currentTime / duration) * 100);
 
-        // Handle repeat functionality
         if (isRepeat && currentTime >= duration) {
           audioRef.current.currentTime = 0;
           audioRef.current.play();
@@ -131,6 +136,48 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
       }
     };
   }, [isRepeat]);
+
+  const handleAddToPlaylist = async () => {
+    console.log();
+
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/playlists/add-to-playlist`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            user_id: currentTrack?.preview,
+            track_id: currentTrack?.preview,
+            title: currentTrack?.title,
+            artist: currentTrack?.artist,
+            image: currentTrack?.image,
+            preview: currentTrack?.preview,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setIsAdded(true);
+        toast.success("Song added to playlist!");
+
+        setTimeout(() => {
+          setIsAdded(false);
+        }, 3000); // Revert back to plus icon after 3 seconds
+      } else {
+        const data = await response.json();
+        toast.error(data.message || "Failed to add song to playlist.");
+      }
+    } catch (error) {
+      console.error("Error adding to playlist:", error);
+      toast.error("An error occurred while adding to playlist.");
+    }
+  };
 
   return (
     <>
@@ -154,7 +201,6 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                   {currentTrack?.artist || "Unknown Artist"}
                 </p>
               </div>
-              <FaPlus className="hidden border-2 border-white rounded-full text-xl p-1 cursor-pointer " />
             </div>
 
             {/* Controls */}
@@ -182,7 +228,14 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                 className="cursor-pointer text-xl"
                 onClick={handleNext}
               />
-              <FaPlus className="md:block border-2 border-white rounded-full text-xl p-1 cursor-pointer " />
+              <div
+                className={`md:block border-2 border-white rounded-full text-xl p-1 cursor-pointer ${
+                  isAdded ? "bg-green-500 border-green-500" : ""
+                }`}
+                onClick={handleAddToPlaylist}
+              >
+                {isAdded ? <FaCheck /> : <FaPlus />}
+              </div>
               <FaRedo
                 className={`cursor-pointer hidden md:block  text-xl ${
                   isRepeat ? "text-[#FACD66]" : ""

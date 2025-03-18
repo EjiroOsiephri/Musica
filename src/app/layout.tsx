@@ -5,6 +5,7 @@ import "./globals.css";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "../store/store";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,8 @@ export default function RootLayout({
             {children}
           </PersistGate>
         </Provider>
+        {/* Place the Toaster inside the body */}
+        <Toaster position="top-right" reverseOrder={false} />
       </body>
     </html>
   );
