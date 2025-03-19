@@ -137,9 +137,12 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   }, [isRepeat]);
 
   const handleAddToPlaylist = async () => {
-    console.log();
-
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast.error("No token found. Please log in again.");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -148,7 +151,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token.trim()}`,
           },
           body: JSON.stringify({
             user_id: currentTrack?.preview,
@@ -161,15 +164,14 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
         }
       );
 
+      const data = await response.json();
+      console.log("Server Response:", data);
+
       if (response.ok) {
         setIsAdded(true);
         toast.success("Song added to playlist!");
-
-        setTimeout(() => {
-          setIsAdded(false);
-        }, 3000); // Revert back to plus icon after 3 seconds
+        setTimeout(() => setIsAdded(false), 3000);
       } else {
-        const data = await response.json();
         toast.error(data.message || "Failed to add song to playlist.");
       }
     } catch (error) {

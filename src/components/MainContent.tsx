@@ -57,21 +57,41 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const extractToken = () => {
+    const extractToken = async () => {
       if (typeof window !== "undefined") {
+        const queryParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(
           window.location.hash.substring(1)
         );
 
-        const token = hashParams.get("access_token");
+        const googleToken = hashParams.get("access_token");
+        const facebookCode = queryParams.get("code");
 
-        if (token) {
-          localStorage.setItem("token", token);
+        let provider: "facebook" | "google" | null = null;
+        let token = null;
 
-          // Clean up URL
-          window.history.replaceState(null, "", window.location.pathname);
+        if (googleToken) {
+          provider = "google";
+          token = googleToken;
+        } else if (facebookCode) {
+          provider = "facebook";
+          token = facebookCode;
+        }
 
-          router.push("/dashboard");
+        if (provider && token) {
+          try {
+            const response = await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/${provider}-login`,
+              { token }
+            );
+
+            localStorage.setItem("token", response.data.access_token);
+
+            window.history.replaceState(null, "", window.location.pathname);
+            router.push("/dashboard");
+          } catch (error) {
+            console.error("Error exchanging OAuth token for JWT:", error);
+          }
         }
       }
     };
