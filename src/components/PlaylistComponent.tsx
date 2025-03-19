@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaHeart } from "react-icons/fa";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -10,27 +11,55 @@ import MusicPlayer from "./MusicPlayer";
 import { useSelector } from "react-redux";
 
 const PlaylistComponent = () => {
+  interface Song {
+    image: string;
+    title: string;
+    album: string;
+    duration: string;
+  }
+
+  const [songs, setSongs] = useState<Song[]>([]);
   const playlists = useSelector((state: { playlists: any }) => state.playlists);
 
-  const songs = [
-    { title: "Let me love you - Krisx", album: "Single", duration: "4:17" },
-    {
-      title: "Watin man go do - Burna",
-      album: "African giant",
-      duration: "2:30",
-    },
-    { title: "Stand strong - Davido", album: "Single", duration: "2:02" },
-    { title: "Closa - Ybee", album: "Obi datti", duration: "3:23" },
-  ];
+  useEffect(() => {
+    const fetchPlaylist = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+        if (!API_URL) {
+          console.error("API URL is not defined in the environment variables");
+          return;
+        }
+
+        const response = await fetch(`${API_URL}/playlists/get-playlist`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Response:", response);
+
+        if (response.ok) {
+          const data = await response.json();
+          setSongs(data.playlist);
+        } else {
+          console.error("Failed to fetch playlist");
+        }
+      } catch (error) {
+        console.error("Error fetching playlist:", error);
+      }
+    };
+
+    fetchPlaylist();
+  }, []);
 
   return (
     <>
       <Sidebar />
-      {/* Parent Div with Background Image */}
       <div className="relative min-h-screen text-white pb-32">
-        {" "}
-        {/* Increased bottom padding */}
-        {/* Background Image */}
         <div className="absolute inset-0">
           <Image
             src={ImageLead}
@@ -40,9 +69,7 @@ const PlaylistComponent = () => {
             className="opacity-40"
           />
         </div>
-        {/* Content */}
         <div className="relative pl-20 lg:pl-24 p-8 bg-[#121212]/80 min-h-screen space-y-12">
-          {/* Search Bar */}
           <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 max-w-md">
             <FiSearch className="text-gray-400 text-lg mr-2" />
             <input
@@ -51,10 +78,7 @@ const PlaylistComponent = () => {
               className="bg-transparent outline-none text-white placeholder-gray-400 flex-1"
             />
           </div>
-
-          {/* Album Section */}
           <div className="flex flex-col md:flex-row gap-10">
-            {/* Album Image */}
             <div className="w-56 h-56 relative rounded-lg overflow-hidden">
               <Image
                 src={ImageLead}
@@ -63,21 +87,14 @@ const PlaylistComponent = () => {
                 objectFit="cover"
               />
             </div>
-
-            {/* Album Details */}
             <div className="flex flex-col space-y-4">
               <h1 className="text-4xl font-semibold text-gray-200">
                 Tomorrow’s tunes
               </h1>
               <p className="text-gray-400 max-w-md text-sm leading-relaxed">
-                A handpicked collection of fresh sounds and timeless classics,
-                carefully curated to set the perfect vibe. Whether you're
-                unwinding or getting pumped for the day, these tunes will keep
-                you in the groove.
+                A handpicked collection of fresh sounds and timeless classics.
               </p>
-              <p className="text-gray-500 text-sm">64 songs ~ 16 hrs+</p>
-
-              {/* Action Buttons */}
+              <p className="text-gray-500 text-sm">{songs.length} songs</p>
               <div className="flex items-center gap-6 mt-4">
                 <button className="bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-lg">
                   Play all
@@ -89,50 +106,44 @@ const PlaylistComponent = () => {
               </div>
             </div>
           </div>
-
-          {/* Song List */}
           <div className="mt-16 space-y-4">
-            {/* Increased margin for better spacing */}
             <div className="grid grid-cols-4 text-gray-400 text-sm pb-3 border-b border-gray-700 px-4">
               <p>Title</p>
               <p>Album</p>
               <p>Duration</p>
-              <p></p> {/* Empty for actions */}
+              <p></p>
             </div>
-            {songs.map((song, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
-              >
-                {/* Song Image & Title */}
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 relative rounded-md overflow-hidden">
-                    <Image
-                      src="/dummy-song.jpg"
-                      alt="Song"
-                      layout="fill"
-                      objectFit="cover"
-                    />
+            {songs.length > 0 ? (
+              songs.map((song, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 relative rounded-md overflow-hidden">
+                      <Image
+                        src={song?.image || "/dummy-song.jpg"}
+                        alt="Song"
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    </div>
+                    <p className="text-gray-300">{song.title}</p>
                   </div>
-                  <p className="text-gray-300">{song.title}</p>
+                  <p className="text-gray-500">{song.album}</p>
+                  <p className="text-gray-500">{song.duration}</p>
+                  <BsThreeDotsVertical className="text-gray-400 cursor-pointer justify-self-end" />
                 </div>
-
-                {/* Album */}
-                <p className="text-gray-500">{song.album}</p>
-
-                {/* Duration */}
-                <p className="text-gray-500">{song.duration}</p>
-
-                {/* Action Button */}
-                <BsThreeDotsVertical className="text-gray-400 cursor-pointer justify-self-end" />
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-gray-500 text-center mt-4">
+                No songs found in your playlist.
+              </p>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Music Player */}
-      <MusicPlayer playlist={playlists?.allPlaylists} />
+      <MusicPlayer playlist={songs} />
     </>
   );
 };
