@@ -15,6 +15,14 @@ import {
   setLocalNigerianTracks,
 } from "@/utils/playlistSlice";
 
+function formatMilliseconds(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 export const Section = React.memo(
   ({ title, musicData }: { title: string; musicData: any[] }) => {
     const dispatch = useDispatch();
@@ -59,6 +67,10 @@ export const Section = React.memo(
                   artist: item.artist,
                   image: item.image,
                   preview: item.preview,
+                  album: item.album,
+                  duration: item.duration,
+                  track_id: item.track_id,
+                  user_id: item.user_id,
                 })
               }
             >
@@ -133,6 +145,10 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
                   artist: item.artist,
                   image: item.image,
                   preview: item.preview,
+                  album: item.album,
+                  duration: item.duration,
+                  track_id: item.track_id,
+                  user_id: item.user_id,
                 })
               }
             >
@@ -177,6 +193,10 @@ const MusicSection = () => {
           image?: string;
           title?: string;
           artist?: string;
+          album: string;
+          duration: string | number;
+          track_id: string | number;
+          user_id: string | number;
         };
       };
     }) => state.music.currentTrack
@@ -206,11 +226,16 @@ const MusicSection = () => {
         );
 
         const afrobeatsData = afrobeatsResponse?.data?.tracks || [];
+
         const afrobeatsTracks = afrobeatsData?.map((track: any) => ({
           title: track.name,
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
           preview: track.preview_url,
+          album: track?.album?.name,
+          duration: formatMilliseconds(track?.duration_ms),
+          track_id: track?.id,
+          user_id: track?.track_number,
         }));
         setAfrobeats(afrobeatsTracks);
         dispatch(setLocalAfrobeats(afrobeatsTracks));
@@ -234,6 +259,10 @@ const MusicSection = () => {
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
           preview: track.preview_url,
+          album: track?.album?.name,
+          duration: formatMilliseconds(track?.duration_ms),
+          track_id: track?.id,
+          user_id: track?.track_number,
         }));
         setNigerianTracks(nigerianTracks);
         dispatch(setLocalNigerianTracks(nigerianTracks));
@@ -257,6 +286,10 @@ const MusicSection = () => {
           artist: track.artists[0]?.name || "Unknown Artist",
           image: track.album.images[0]?.url || "/placeholder-image.png",
           preview: track.preview_url,
+          album: track?.album?.name,
+          duration: formatMilliseconds(track?.duration_ms),
+          track_id: track?.id,
+          user_id: track?.track_number,
         }));
         setEdSheeranTracks(edSheeranTracks);
         dispatch(setLocalEdSheeranTracks(edSheeranTracks));

@@ -34,6 +34,10 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
           image?: string;
           title?: string;
           artist?: string;
+          album: string;
+          duration: string | number;
+          track_id: string | number;
+          user_id: string | number;
         };
       };
     }) => state.music.currentTrack
@@ -137,14 +141,10 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   }, [isRepeat]);
 
   const handleAddToPlaylist = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.error("No token found. Please log in again.");
-      return;
-    }
-
     try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found. Please log in again.");
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/playlists/add-to-playlist`,
         {
@@ -154,8 +154,10 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
             Authorization: `Bearer ${token.trim()}`,
           },
           body: JSON.stringify({
-            user_id: currentTrack?.preview,
-            track_id: currentTrack?.preview,
+            user_id: currentTrack?.user_id,
+            track_id: currentTrack?.track_id,
+            album: currentTrack?.album,
+            duration: currentTrack?.duration,
             title: currentTrack?.title,
             artist: currentTrack?.artist,
             image: currentTrack?.image,
@@ -164,19 +166,39 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
         }
       );
 
+      console.log(
+        "Adding to playlist:",
+        JSON.stringify(
+          {
+            user_id: currentTrack?.user_id,
+            track_id: currentTrack?.track_id,
+            album: currentTrack?.album,
+            duration: currentTrack?.duration,
+            title: currentTrack?.title,
+            artist: currentTrack?.artist,
+            image: currentTrack?.image,
+            preview: currentTrack?.preview,
+          },
+          null,
+          2
+        )
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log("Server Response:", data);
 
-      if (response.ok) {
-        setIsAdded(true);
-        toast.success("Song added to playlist!");
-        setTimeout(() => setIsAdded(false), 3000);
-      } else {
-        toast.error(data.message || "Failed to add song to playlist.");
-      }
-    } catch (error) {
+      setIsAdded(true);
+      toast.success("Song added to playlist!");
+      setTimeout(() => setIsAdded(false), 3000);
+    } catch (error: any) {
       console.error("Error adding to playlist:", error);
-      toast.error("An error occurred while adding to playlist.");
+      toast.error(
+        error.message || "An error occurred while adding to playlist."
+      );
     }
   };
 

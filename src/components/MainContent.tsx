@@ -26,6 +26,9 @@ interface Playlist {
   artist: string;
   duration: string;
   image: string;
+  album: string;
+  track_id: string;
+  user_id: string;
   isLiked: boolean;
   preview: string;
 }
@@ -67,8 +70,6 @@ export default function Dashboard() {
         const googleToken = hashParams.get("access_token");
         const facebookCode = queryParams.get("code");
 
-        console.log(facebookCode);
-
         let provider: "facebook" | "google" | null = null;
         let token = null;
 
@@ -86,8 +87,6 @@ export default function Dashboard() {
               `${process.env.NEXT_PUBLIC_API_URL}/${provider}-login`,
               { token }
             );
-
-            console.log(response.data);
 
             localStorage.setItem("token", response.data.access_token);
 
@@ -149,7 +148,12 @@ export default function Dashboard() {
         duration: msToTime(track.duration_ms),
         image: album.images[0]?.url || "/placeholder-image.png",
         preview: track.preview_url || null,
+        album: track?.album?.name,
+        track_id: track?.id,
+        user_id: track?.track_number,
       }));
+
+      console.log(tracks);
 
       dispatch(setSearchResults(tracks));
     } catch (error) {
@@ -227,9 +231,14 @@ export default function Dashboard() {
         artist: track.artists[0]?.name || "Unknown Artist",
         image: track.album.images[0]?.url || "/placeholder-image.png",
         duration: msToTime(track?.duration_ms),
+        album: track?.album?.name,
+        track_id: track?.id,
+        user_id: track?.track_number,
         preview: track.preview_url,
         isLiked: false,
       }));
+
+      console.log(playlistDataTracks);
 
       setPlaylists(playlistDataTracks);
     } catch (error) {
@@ -422,6 +431,10 @@ export default function Dashboard() {
                     artist: playlist.artist,
                     image: playlist.image,
                     preview: playlist.preview,
+                    album: playlist.album,
+                    track_id: playlist.track_id,
+                    user_id: playlist.user_id,
+                    duration: playlist.duration,
                   })
                 }
                 className="flex items-center  justify-between bg-[#1A1E1F] p-4 rounded-lg min-w-[300px] lg:min-w-0"

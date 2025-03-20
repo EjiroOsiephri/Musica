@@ -40,10 +40,10 @@ const PlaylistComponent = () => {
           },
         });
 
-        console.log("Response:", response);
-
         if (response.ok) {
           const data = await response.json();
+          console.log(data);
+
           setSongs(data.playlist);
         } else {
           console.error("Failed to fetch playlist");
