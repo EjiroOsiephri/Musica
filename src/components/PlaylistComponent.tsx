@@ -131,7 +131,7 @@ const PlaylistComponent = () => {
                 <motion.div
                   key={index}
                   className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
-                  whileTap={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() =>
                     handleTrackClick({
                       title: song.title,

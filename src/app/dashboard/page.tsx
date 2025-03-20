@@ -5,9 +5,12 @@ import MusicPlayer from "../../components/MusicPlayer";
 import React from "react";
 import MusicSection from "@/components/NewReleases";
 import { useSelector } from "react-redux";
+import useAuth from "@/hooks/useAuth";
 
 const DashboardPage = () => {
   const playlists = useSelector((state: { playlists: any }) => state.playlists);
+
+  useAuth();
 
   return (
     <>
