@@ -8,6 +8,9 @@ import { FiSearch } from "react-icons/fi";
 import ImageLead from "../../public/Lead-image (1).png";
 import Sidebar from "./SideBar";
 import MusicPlayer from "./MusicPlayer";
+import { useDispatch } from "react-redux";
+import { motion } from "framer-motion";
+import { setCurrentTrack } from "../utils/musicSlice";
 import { useSelector } from "react-redux";
 
 const PlaylistComponent = () => {
@@ -15,11 +18,21 @@ const PlaylistComponent = () => {
     image: string;
     title: string;
     album: string;
-    duration: string;
+    duration: string | number;
+    artist: string;
+    preview: string;
+    track_id: string | number;
+    user_id: string | number;
   }
 
   const [songs, setSongs] = useState<Song[]>([]);
   const playlists = useSelector((state: { playlists: any }) => state.playlists);
+
+  const dispatch = useDispatch();
+
+  const handleTrackClick = (track: any) => {
+    dispatch(setCurrentTrack(track));
+  };
 
   useEffect(() => {
     const fetchPlaylist = async () => {
@@ -115,9 +128,22 @@ const PlaylistComponent = () => {
             </div>
             {songs.length > 0 ? (
               songs.map((song, index) => (
-                <div
+                <motion.div
                   key={index}
                   className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
+                  whileTap={{ scale: 1.02 }}
+                  onClick={() =>
+                    handleTrackClick({
+                      title: song.title,
+                      artist: song.artist,
+                      image: song.image,
+                      preview: song.preview,
+                      album: song.album,
+                      duration: song.duration,
+                      track_id: song.track_id,
+                      user_id: song.user_id,
+                    })
+                  }
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 relative rounded-md overflow-hidden">
@@ -133,7 +159,7 @@ const PlaylistComponent = () => {
                   <p className="text-gray-500">{song.album}</p>
                   <p className="text-gray-500">{song.duration}</p>
                   <BsThreeDotsVertical className="text-gray-400 cursor-pointer justify-self-end" />
-                </div>
+                </motion.div>
               ))
             ) : (
               <p className="text-gray-500 text-center mt-4">
