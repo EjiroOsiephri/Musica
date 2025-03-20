@@ -166,24 +166,6 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
         }
       );
 
-      console.log(
-        "Adding to playlist:",
-        JSON.stringify(
-          {
-            user_id: currentTrack?.user_id,
-            track_id: currentTrack?.track_id,
-            album: currentTrack?.album,
-            duration: currentTrack?.duration,
-            title: currentTrack?.title,
-            artist: currentTrack?.artist,
-            image: currentTrack?.image,
-            preview: currentTrack?.preview,
-          },
-          null,
-          2
-        )
-      );
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }

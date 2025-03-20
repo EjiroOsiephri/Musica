@@ -153,8 +153,6 @@ export default function Dashboard() {
         user_id: track?.track_number,
       }));
 
-      console.log(tracks);
-
       dispatch(setSearchResults(tracks));
     } catch (error) {
       console.error("Error fetching song data:", error);
@@ -237,8 +235,6 @@ export default function Dashboard() {
         preview: track.preview_url,
         isLiked: false,
       }));
-
-      console.log(playlistDataTracks);
 
       setPlaylists(playlistDataTracks);
     } catch (error) {
