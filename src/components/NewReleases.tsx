@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
-import { useSelector } from "react-redux";
-
 import { GeminiSkeletonLoader } from "../utils/Loader";
 import {
   setLocalAfrobeats,
@@ -19,32 +17,59 @@ function formatMilliseconds(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
+
+const TrackCard = React.memo(
+  ({
+    item,
+    index,
+    handleTrackClick,
+  }: {
+    item: any;
+    index: number;
+    handleTrackClick: (track: any) => void;
+  }) => {
+    const [loaded, setLoaded] = useState(false);
+
+    return (
+      <motion.div
+        key={index}
+        className="shrink-0 w-[150px] h-[250px] cursor-pointer"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => handleTrackClick(item)}
+      >
+        {!loaded && <GeminiSkeletonLoader />}
+        <Image
+          src={item.image}
+          alt={`${item.title} cover`}
+          width={150}
+          height={150}
+          className={`rounded-lg object-cover transition-opacity duration-300 ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
+          onLoad={() => setLoaded(true)}
+          loading="lazy"
+        />
+        {loaded && (
+          <h3 className="text-white text-sm mt-2 truncate">{item.title}</h3>
+        )}
+      </motion.div>
+    );
+  }
+);
 
 export const Section = React.memo(
   ({ title, musicData }: { title: string; musicData: any[] }) => {
     const dispatch = useDispatch();
-    const [loaded, setLoaded] = useState<boolean[]>([]);
 
-    const handleTrackClick = (track: any) => {
-      dispatch(setCurrentTrack(track));
-    };
-
-    const handleImageLoad = (index: number) => {
-      setLoaded((prev) => {
-        const newLoaded = [...prev];
-        newLoaded[index] = true;
-        return newLoaded;
-      });
-    };
-
-    useEffect(() => {
-      if (musicData) {
-        setLoaded(Array(musicData.length).fill(false));
-      }
-    }, [musicData]);
+    const handleTrackClick = useCallback(
+      (track: any) => {
+        dispatch(setCurrentTrack(track));
+      },
+      [dispatch]
+    );
 
     return (
       <div className="mb-2">
@@ -55,44 +80,13 @@ export const Section = React.memo(
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          {musicData?.map((item: any, index: number) => (
-            <motion.div
+          {musicData?.map((item, index) => (
+            <TrackCard
               key={index}
-              className="shrink-0 w-[150px] h-[250px] cursor-pointer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() =>
-                handleTrackClick({
-                  title: item.title,
-                  artist: item.artist,
-                  image: item.image,
-                  preview: item.preview,
-                  album: item.album,
-                  duration: item.duration,
-                  track_id: item.track_id,
-                  user_id: item.user_id,
-                })
-              }
-            >
-              {!loaded[index] && <GeminiSkeletonLoader />}
-              <Image
-                src={item.image}
-                alt={`${item.title} cover`}
-                blurDataURL={item.image}
-                width={150}
-                height={150}
-                className={`rounded-lg object-cover transition-opacity duration-300 ${
-                  loaded[index] ? "opacity-100" : "opacity-0"
-                }`}
-                onLoad={() => handleImageLoad(index)}
-                loading="lazy"
-              />
-              {loaded[index] && (
-                <h3 className="text-white text-sm mt-2 truncate">
-                  {item.title}
-                </h3>
-              )}
-            </motion.div>
+              item={item}
+              index={index}
+              handleTrackClick={handleTrackClick}
+            />
           ))}
         </motion.div>
       </div>
@@ -102,26 +96,19 @@ export const Section = React.memo(
 
 export const SearchSection = React.memo(({ title }: { title: string }) => {
   const dispatch = useDispatch();
-  const [loaded, setLoaded] = useState<boolean[]>([]);
   const searchResults = useSelector((state: any) => state.music.searchResults);
 
-  const handleTrackClick = (track: any) => {
-    dispatch(setCurrentTrack(track));
-  };
+  const handleTrackClick = useCallback(
+    (track: any) => {
+      dispatch(setCurrentTrack(track));
+    },
+    [dispatch]
+  );
 
-  const handleImageLoad = (index: number) => {
-    setLoaded((prev) => {
-      const newLoaded = [...prev];
-      newLoaded[index] = true;
-      return newLoaded;
-    });
-  };
-
-  useEffect(() => {
-    setLoaded(Array(searchResults?.length).fill(false));
-  }, [searchResults]);
-
-  const dataToRender = searchResults?.length > 0 && searchResults;
+  const dataToRender = useMemo(
+    () => searchResults?.length > 0 && searchResults,
+    [searchResults]
+  );
 
   return (
     <div className="mb-2">
@@ -133,43 +120,13 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
         transition={{ duration: 0.5 }}
       >
         {dataToRender ? (
-          dataToRender.map((item: any, index: number) => (
-            <motion.div
+          dataToRender.map((item: any, index: any) => (
+            <TrackCard
               key={index}
-              className="shrink-0 w-[150px] h-[250px] cursor-pointer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() =>
-                handleTrackClick({
-                  title: item.title,
-                  artist: item.artist,
-                  image: item.image,
-                  preview: item.preview,
-                  album: item.album,
-                  duration: item.duration,
-                  track_id: item.track_id,
-                  user_id: item.user_id,
-                })
-              }
-            >
-              {!loaded[index] && <GeminiSkeletonLoader />}
-              <Image
-                src={item?.image || "/placeholder-image.png"}
-                alt={`${item?.title || "Unknown"} cover`}
-                width={150}
-                height={150}
-                className={`rounded-lg object-cover transition-opacity duration-300 ${
-                  loaded[index] ? "opacity-100" : "opacity-0"
-                }`}
-                onLoad={() => handleImageLoad(index)}
-                loading="lazy"
-              />
-              {loaded[index] && (
-                <h3 className="text-white text-sm mt-2 truncate">
-                  {item?.title || "Unknown Title"}
-                </h3>
-              )}
-            </motion.div>
+              item={item}
+              index={index}
+              handleTrackClick={handleTrackClick}
+            />
           ))
         ) : (
           <p className="text-white">No search results found</p>
@@ -179,131 +136,88 @@ export const SearchSection = React.memo(({ title }: { title: string }) => {
   );
 });
 
+const fetchMusicData = async () => {
+  const rapidApiKey = process.env.NEXT_PUBLIC_RAPID_API_KEY;
+  const headers = {
+    "x-rapidapi-key": rapidApiKey,
+    "x-rapidapi-host": "spotify23.p.rapidapi.com",
+  };
+
+  const genres = [
+    {
+      name: "afrobeats",
+      seed_tracks: "0c6xIDDpzE81m2q797ordA",
+      seed_artists: "4NHQUGzhtTLFvgF5SZesLK",
+    },
+    {
+      name: "nigerian",
+      seed_tracks: "3FAJ6O0NOHQV8Mc5Ri6ENp",
+      seed_artists: "3tVQdUvClmAT7URs9V3rsp",
+    },
+    {
+      name: "ed_sheeran",
+      seed_tracks: "4WNcduiCmDNfmTEz7JvmLv",
+      seed_artists: "6eUKZXaKkcviH0Ku9w2n3V",
+    },
+  ];
+
+  try {
+    const responses = await Promise.all(
+      genres.map(({ seed_tracks, seed_artists }) =>
+        axios.get("https://spotify23.p.rapidapi.com/recommendations/", {
+          headers,
+          params: {
+            limit: "50",
+            seed_genres: "pop, indie pop",
+            seed_tracks,
+            seed_artists,
+          },
+        })
+      )
+    );
+
+    return responses.map((response) =>
+      response?.data?.tracks?.map((track: any) => ({
+        title: track.name,
+        artist: track.artists[0]?.name || "Unknown Artist",
+        image: track.album.images[0]?.url || "/placeholder-image.png",
+        preview: track.preview_url,
+        album: track?.album?.name,
+        duration: formatMilliseconds(track?.duration_ms),
+        track_id: track?.id,
+        user_id: track?.track_number,
+      }))
+    );
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [[], [], []];
+  }
+};
+
 const MusicSection = () => {
+  const dispatch = useDispatch();
   const [afrobeats, setAfrobeats] = useState<any[]>([]);
   const [nigerianTracks, setNigerianTracks] = useState<any[]>([]);
   const [edSheeranTracks, setEdSheeranTracks] = useState<any[]>([]);
-  const dispatch = useDispatch();
-
-  const currentTrack = useSelector(
-    (state: {
-      music: {
-        currentTrack: {
-          preview: string;
-          image?: string;
-          title?: string;
-          artist?: string;
-          album: string;
-          duration: string | number;
-          track_id: string | number;
-          user_id: string | number;
-        };
-      };
-    }) => state.music.currentTrack
-  );
 
   useEffect(() => {
-    const fetchMusicData = async () => {
-      const rapidApiKey = process.env.NEXT_PUBLIC_RAPID_API_KEY;
+    (async () => {
+      const [afrobeatsData, nigerianData, edSheeranData] =
+        await fetchMusicData();
 
-      const headers = {
-        "x-rapidapi-key": rapidApiKey,
-        "x-rapidapi-host": "spotify23.p.rapidapi.com",
-      };
+      setAfrobeats(afrobeatsData);
+      setNigerianTracks(nigerianData);
+      setEdSheeranTracks(edSheeranData);
 
-      try {
-        const afrobeatsResponse = await axios.get(
-          "https://spotify23.p.rapidapi.com/recommendations/",
-          {
-            headers,
-            params: {
-              limit: "50",
-              seed_genres: "afrobeat",
-              seed_tracks: "0c6xIDDpzE81m2q797ordA",
-              seed_artists: "4NHQUGzhtTLFvgF5SZesLK",
-            },
-          }
-        );
-
-        const afrobeatsData = afrobeatsResponse?.data?.tracks || [];
-
-        const afrobeatsTracks = afrobeatsData?.map((track: any) => ({
-          title: track.name,
-          artist: track.artists[0]?.name || "Unknown Artist",
-          image: track.album.images[0]?.url || "/placeholder-image.png",
-          preview: track.preview_url,
-          album: track?.album?.name,
-          duration: formatMilliseconds(track?.duration_ms),
-          track_id: track?.id,
-          user_id: track?.track_number,
-        }));
-        setAfrobeats(afrobeatsTracks);
-        dispatch(setLocalAfrobeats(afrobeatsTracks));
-
-        const nigerianResponse = await axios.get(
-          "https://spotify23.p.rapidapi.com/recommendations/",
-          {
-            headers,
-            params: {
-              limit: "50",
-              seed_genres: "afrobeat",
-              seed_tracks: "3FAJ6O0NOHQV8Mc5Ri6ENp",
-              seed_artists: "3tVQdUvClmAT7URs9V3rsp",
-            },
-          }
-        );
-
-        const nigerianData = nigerianResponse?.data?.tracks || [];
-        const nigerianTracks = nigerianData?.map((track: any) => ({
-          title: track.name,
-          artist: track.artists[0]?.name || "Unknown Artist",
-          image: track.album.images[0]?.url || "/placeholder-image.png",
-          preview: track.preview_url,
-          album: track?.album?.name,
-          duration: formatMilliseconds(track?.duration_ms),
-          track_id: track?.id,
-          user_id: track?.track_number,
-        }));
-        setNigerianTracks(nigerianTracks);
-        dispatch(setLocalNigerianTracks(nigerianTracks));
-
-        const edSheeranResponse = await axios.get(
-          "https://spotify23.p.rapidapi.com/recommendations/",
-          {
-            headers,
-            params: {
-              limit: "50",
-              seed_genres: "pop, indie pop",
-              seed_tracks: "4WNcduiCmDNfmTEz7JvmLv",
-              seed_artists: "6eUKZXaKkcviH0Ku9w2n3V",
-            },
-          }
-        );
-
-        const edSheeranData = edSheeranResponse?.data?.tracks || [];
-        const edSheeranTracks = edSheeranData?.map((track: any) => ({
-          title: track.name,
-          artist: track.artists[0]?.name || "Unknown Artist",
-          image: track.album.images[0]?.url || "/placeholder-image.png",
-          preview: track.preview_url,
-          album: track?.album?.name,
-          duration: formatMilliseconds(track?.duration_ms),
-          track_id: track?.id,
-          user_id: track?.track_number,
-        }));
-        setEdSheeranTracks(edSheeranTracks);
-        dispatch(setLocalEdSheeranTracks(edSheeranTracks));
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchMusicData();
+      dispatch(setLocalAfrobeats(afrobeatsData));
+      dispatch(setLocalNigerianTracks(nigerianData));
+      dispatch(setLocalEdSheeranTracks(edSheeranData));
+    })();
   }, [dispatch]);
 
   return (
     <div className="px-8 py-6 scrollbar-hide h-[calc(100vh-4rem)]">
-      <Section title="Reccommended For You" musicData={afrobeats} />
+      <Section title="Recommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />
       <SearchSection title="Search Results" />
