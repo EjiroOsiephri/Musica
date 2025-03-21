@@ -66,14 +66,27 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   };
 
   const handleNext = () => {
-    if (playlist && currentTrack) {
-      const currentIndex = playlist.findIndex(
-        (track) => track.preview === currentTrack.preview
-      );
-      const nextIndex = (currentIndex + 1) % playlist.length;
-      dispatch(setCurrentTrack(playlist[nextIndex]));
-    }
+    if (playlist.length === 0) return;
+
+    const currentIndex = playlist.findIndex(
+      (track) => track.preview === currentTrack?.preview
+    );
+
+    const nextIndex = (currentIndex + 1) % playlist.length;
+    dispatch(setCurrentTrack(playlist[nextIndex]));
   };
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.addEventListener("ended", handleNext);
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("ended", handleNext);
+      }
+    };
+  }, [currentTrack, playlist]);
 
   const handlePrevious = () => {
     if (playlist && currentTrack) {

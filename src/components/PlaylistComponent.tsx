@@ -109,9 +109,17 @@ const PlaylistComponent = () => {
               </p>
               <p className="text-gray-500 text-sm">{songs.length} songs</p>
               <div className="flex items-center gap-6 mt-4">
-                <button className="bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-lg">
+                <button
+                  className="bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-lg"
+                  onClick={() => {
+                    if (songs.length > 0) {
+                      dispatch(setCurrentTrack(songs[0]));
+                    }
+                  }}
+                >
                   Play all
                 </button>
+
                 <button className="bg-gray-700 text-white px-5 py-2.5 rounded-lg">
                   Add to collection
                 </button>
