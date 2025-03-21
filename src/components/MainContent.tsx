@@ -17,6 +17,7 @@ import Logo from "../../public/logo.png";
 import Image from "next/image";
 import { FaRadio } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
+import Sidebar from "./SideBar";
 import { setSearchResults } from "@/utils/musicSlice";
 import { setCurrentTrack } from "@/utils/musicSlice";
 

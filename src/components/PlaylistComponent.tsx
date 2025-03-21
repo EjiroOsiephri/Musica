@@ -8,10 +8,9 @@ import { FiSearch } from "react-icons/fi";
 import ImageLead from "../../public/Lead-image (1).png";
 import Sidebar from "./SideBar";
 import MusicPlayer from "./MusicPlayer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { setCurrentTrack } from "../utils/musicSlice";
-import { useSelector } from "react-redux";
 
 const PlaylistComponent = () => {
   interface Song {
@@ -26,11 +25,12 @@ const PlaylistComponent = () => {
   }
 
   const [songs, setSongs] = useState<Song[]>([]);
+  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const playlists = useSelector((state: { playlists: any }) => state.playlists);
-
   const dispatch = useDispatch();
 
-  const handleTrackClick = (track: any) => {
+  const handleTrackClick = (track: Song) => {
     dispatch(setCurrentTrack(track));
   };
 
@@ -55,9 +55,9 @@ const PlaylistComponent = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
-
+          console.log("Fetched Playlist:", data);
           setSongs(data.playlist);
+          setFilteredSongs(data.playlist); // Initialize filtered songs
         } else {
           console.error("Failed to fetch playlist");
         }
@@ -68,6 +68,23 @@ const PlaylistComponent = () => {
 
     fetchPlaylist();
   }, []);
+
+  // Debounce search - updates after user stops typing for 500ms or on pressing Enter
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchTerm.trim() === "") {
+        setFilteredSongs(songs);
+      } else {
+        setFilteredSongs(
+          songs.filter((song) =>
+            song.title.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        );
+      }
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [searchTerm, songs]);
 
   return (
     <>
@@ -89,6 +106,19 @@ const PlaylistComponent = () => {
               type="text"
               placeholder="Search playlists..."
               className="bg-transparent outline-none text-white placeholder-gray-400 flex-1"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setFilteredSongs(
+                    songs.filter((song) =>
+                      song.title
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase())
+                    )
+                  );
+                }
+              }}
             />
           </div>
           <div className="flex flex-col md:flex-row gap-10">
@@ -107,14 +137,16 @@ const PlaylistComponent = () => {
               <p className="text-gray-400 max-w-md text-sm leading-relaxed">
                 A handpicked collection of fresh sounds and timeless classics.
               </p>
-              <p className="text-gray-500 text-sm">{songs.length} songs</p>
+              <p className="text-gray-500 text-sm">
+                {filteredSongs.length} songs
+              </p>
               <div className="flex items-center gap-6 mt-4">
                 <motion.button
                   whileTap={{ scale: 1.05 }}
                   className="bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-lg"
                   onClick={() => {
-                    if (songs.length > 0) {
-                      dispatch(setCurrentTrack(songs[0]));
+                    if (filteredSongs.length > 0) {
+                      dispatch(setCurrentTrack(filteredSongs[0]));
                     }
                   }}
                 >
@@ -135,8 +167,8 @@ const PlaylistComponent = () => {
               <p>Duration</p>
               <p></p>
             </div>
-            {songs.length > 0 ? (
-              songs.map((song, index) => (
+            {filteredSongs.length > 0 ? (
+              filteredSongs.map((song, index) => (
                 <motion.div
                   key={index}
                   className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
@@ -178,7 +210,7 @@ const PlaylistComponent = () => {
           </div>
         </div>
       </div>
-      <MusicPlayer playlist={songs} />
+      <MusicPlayer playlist={filteredSongs} />
     </>
   );
 };
