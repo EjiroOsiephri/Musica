@@ -27,7 +27,6 @@ const PlaylistComponent = () => {
   const [songs, setSongs] = useState<Song[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const playlists = useSelector((state: { playlists: any }) => state.playlists);
   const dispatch = useDispatch();
 
   const handleTrackClick = (track: Song) => {
@@ -56,8 +55,16 @@ const PlaylistComponent = () => {
         if (response.ok) {
           const data = await response.json();
           console.log("Fetched Playlist:", data);
-          setSongs(data.playlist);
-          setFilteredSongs(data.playlist); // Initialize filtered songs
+
+          // Filter out duplicate songs based on track_id
+          const uniqueSongs: Song[] = Array.from(
+            new Map<string | number, Song>(
+              data.playlist.map((song: Song) => [song.track_id, song])
+            ).values()
+          );
+
+          setSongs(uniqueSongs);
+          setFilteredSongs(uniqueSongs);
         } else {
           console.error("Failed to fetch playlist");
         }
@@ -69,18 +76,16 @@ const PlaylistComponent = () => {
     fetchPlaylist();
   }, []);
 
-  // Debounce search - updates after user stops typing for 500ms or on pressing Enter
+  // Debounced search - updates after user stops typing for 500ms or on pressing Enter
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (searchTerm.trim() === "") {
-        setFilteredSongs(songs);
-      } else {
-        setFilteredSongs(
-          songs.filter((song) =>
-            song.title.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        );
-      }
+      setFilteredSongs(
+        searchTerm.trim()
+          ? songs.filter((song) =>
+              song.title.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          : songs
+      );
     }, 500);
 
     return () => clearTimeout(handler);
@@ -152,11 +157,7 @@ const PlaylistComponent = () => {
                 >
                   Play all
                 </motion.button>
-
-                <button className="bg-gray-700 text-white px-5 py-2.5 rounded-lg">
-                  Add to collection
-                </button>
-                <FaHeart className="text-gray-400 text-2xl cursor-pointer" />
+                <FaHeart className="text-pink-500 text-2xl cursor-pointer" />
               </div>
             </div>
           </div>
