@@ -49,8 +49,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   useEffect(() => {
     if (currentTrack?.preview && audioRef.current) {
       audioRef.current.src = currentTrack.preview;
-      audioRef.current.play();
-      setIsPlaying(true);
+      setIsPlaying(false);
     }
   }, [currentTrack]);
 
