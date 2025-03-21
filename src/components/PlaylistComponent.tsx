@@ -109,7 +109,8 @@ const PlaylistComponent = () => {
               </p>
               <p className="text-gray-500 text-sm">{songs.length} songs</p>
               <div className="flex items-center gap-6 mt-4">
-                <button
+                <motion.button
+                  whileTap={{ scale: 1.05 }}
                   className="bg-yellow-500 text-black font-semibold px-5 py-2.5 rounded-lg"
                   onClick={() => {
                     if (songs.length > 0) {
@@ -118,7 +119,7 @@ const PlaylistComponent = () => {
                   }}
                 >
                   Play all
-                </button>
+                </motion.button>
 
                 <button className="bg-gray-700 text-white px-5 py-2.5 rounded-lg">
                   Add to collection
