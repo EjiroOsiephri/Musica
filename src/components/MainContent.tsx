@@ -287,6 +287,7 @@ export default function Dashboard() {
                   currentRoute === item.route ? "text-yellow-500" : ""
                 }`}
                 whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 1.1 }}
                 onClick={() => router.push(item.route)}
               >
                 {item.icon}
