@@ -13,6 +13,17 @@ import {
   setLocalNigerianTracks,
 } from "@/utils/playlistSlice";
 
+interface Track {
+  title: string;
+  artist: string;
+  image: string;
+  preview: string | null;
+  album: string;
+  duration: string;
+  track_id: string;
+  user_id: number;
+}
+
 function formatMilliseconds(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -26,9 +37,9 @@ const TrackCard = React.memo(
     index,
     handleTrackClick,
   }: {
-    item: any;
+    item: Track;
     index: number;
-    handleTrackClick: (track: any) => void;
+    handleTrackClick: (track: Track) => void;
   }) => {
     const [loaded, setLoaded] = useState(false);
 
@@ -60,13 +71,14 @@ const TrackCard = React.memo(
   }
 );
 
-export const Section = React.memo(
-  ({ title, musicData }: { title: string; musicData: any[] }) => {
+const Section = React.memo(
+  ({ title, musicData }: { title: string; musicData: Track[] }) => {
     const dispatch = useDispatch();
 
     const handleTrackClick = useCallback(
-      (track: any) => {
+      (track: Track) => {
         dispatch(setCurrentTrack(track));
+        localStorage.setItem("lastPlayedTrack", JSON.stringify(track));
       },
       [dispatch]
     );
@@ -94,55 +106,12 @@ export const Section = React.memo(
   }
 );
 
-export const SearchSection = React.memo(({ title }: { title: string }) => {
-  const dispatch = useDispatch();
-  const searchResults = useSelector((state: any) => state.music.searchResults);
-
-  const handleTrackClick = useCallback(
-    (track: any) => {
-      dispatch(setCurrentTrack(track));
-    },
-    [dispatch]
-  );
-
-  const dataToRender = useMemo(
-    () => searchResults?.length > 0 && searchResults,
-    [searchResults]
-  );
-
-  return (
-    <div className="mb-2">
-      <h2 className="text-white text-2xl font-semibold mb-4">{title}</h2>
-      <motion.div
-        className="flex space-x-4 overflow-x-scroll overflow-y-hidden scrollbar-hide"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        {dataToRender ? (
-          dataToRender.map((item: any, index: any) => (
-            <TrackCard
-              key={index}
-              item={item}
-              index={index}
-              handleTrackClick={handleTrackClick}
-            />
-          ))
-        ) : (
-          <p className="text-white">No search results found</p>
-        )}
-      </motion.div>
-    </div>
-  );
-});
-
-const fetchMusicData = async () => {
+const fetchMusicData = async (): Promise<Track[][]> => {
   const rapidApiKey = process.env.NEXT_PUBLIC_RAPID_API_KEY;
   const headers = {
     "x-rapidapi-key": rapidApiKey,
     "x-rapidapi-host": "spotify23.p.rapidapi.com",
   };
-
   const genres = [
     {
       name: "afrobeats",
@@ -196,19 +165,25 @@ const fetchMusicData = async () => {
 
 const MusicSection = () => {
   const dispatch = useDispatch();
-  const [afrobeats, setAfrobeats] = useState<any[]>([]);
-  const [nigerianTracks, setNigerianTracks] = useState<any[]>([]);
-  const [edSheeranTracks, setEdSheeranTracks] = useState<any[]>([]);
+  const [afrobeats, setAfrobeats] = useState<Track[]>([]);
+  const [nigerianTracks, setNigerianTracks] = useState<Track[]>([]);
+  const [edSheeranTracks, setEdSheeranTracks] = useState<Track[]>([]);
 
   useEffect(() => {
+    const userToken = localStorage.getItem("userToken");
+    const savedSearchResults = localStorage.getItem(
+      `searchResults_${userToken}`
+    );
+    if (savedSearchResults) {
+      dispatch(setLocalAfrobeats(JSON.parse(savedSearchResults)));
+    }
+
     (async () => {
       const [afrobeatsData, nigerianData, edSheeranData] =
         await fetchMusicData();
-
       setAfrobeats(afrobeatsData);
       setNigerianTracks(nigerianData);
       setEdSheeranTracks(edSheeranData);
-
       dispatch(setLocalAfrobeats(afrobeatsData));
       dispatch(setLocalNigerianTracks(nigerianData));
       dispatch(setLocalEdSheeranTracks(edSheeranData));
@@ -220,7 +195,6 @@ const MusicSection = () => {
       <Section title="Recommended For You" musicData={afrobeats} />
       <Section title="Hits For You" musicData={nigerianTracks} />
       <Section title="Pop Culture" musicData={edSheeranTracks} />
-      <SearchSection title="Search Results" />
     </div>
   );
 };
