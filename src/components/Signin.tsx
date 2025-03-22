@@ -72,7 +72,7 @@ export default function SignInComponent() {
 
   return (
     <motion.div
-      className="flex items-center justify-center min-h-screen px-4 py-6 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]"
+      className="flex items-center justify-center min-h-screen px-1 py-2 md:px-4 md:py-6 bg-gradient-to-b from-[#A4C7C6] to-[#1D2123]"
       initial={{ opacity: 0, x: -50 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5 }}

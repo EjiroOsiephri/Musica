@@ -13,6 +13,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
 import toast from "react-hot-toast";
@@ -222,37 +223,50 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
 
             {/* Controls */}
             <div className="flex items-center space-x-6">
-              <FaRandom
-                className="hidden md:block cursor-pointer text-xl"
-                onClick={handleShuffle}
-              />
-              <FaBackward
-                className="cursor-pointer hidden md:block  text-xl"
-                onClick={handlePrevious}
-              />
+              <motion.div whileTap={{ scale: 1.1 }}>
+                <FaRandom
+                  className="hidden md:block cursor-pointer text-xl"
+                  onClick={handleShuffle}
+                />
+              </motion.div>
+              <motion.div whileTap={{ scale: 1.1 }}>
+                <FaBackward
+                  className="cursor-pointer hidden md:block  text-xl"
+                  onClick={handlePrevious}
+                />
+              </motion.div>
+
               {isPlaying ? (
-                <FaPause
-                  className="cursor-pointer text-3xl text-[#FACD66]"
-                  onClick={handlePlayPause}
-                />
+                <motion.div whileTap={{ scale: 1.1 }}>
+                  <FaPause
+                    className="cursor-pointer text-3xl text-[#FACD66]"
+                    onClick={handlePlayPause}
+                  />
+                </motion.div>
               ) : (
-                <FaPlay
-                  className="cursor-pointer text-3xl text-[#FACD66]"
-                  onClick={handlePlayPause}
-                />
+                <motion.div whileTap={{ scale: 1.1 }}>
+                  <FaPlay
+                    className="cursor-pointer text-3xl text-[#FACD66]"
+                    onClick={handlePlayPause}
+                  />
+                </motion.div>
               )}
-              <FaForward
-                className="cursor-pointer text-xl"
-                onClick={handleNext}
-              />
-              <div
+              <motion.div whileTap={{ scale: 1.1 }}>
+                <FaForward
+                  className="cursor-pointer text-xl"
+                  onClick={handleNext}
+                />
+              </motion.div>
+
+              <motion.div
+                whileTap={{ scale: 1.1 }}
                 className={`md:block border-2 border-white rounded-full text-xl p-1 cursor-pointer ${
                   isAdded ? "bg-green-500 border-green-500" : ""
                 }`}
                 onClick={handleAddToPlaylist}
               >
                 {isAdded ? <FaCheck /> : <FaPlus />}
-              </div>
+              </motion.div>
               <FaRedo
                 className={`cursor-pointer hidden md:block  text-xl ${
                   isRepeat ? "text-[#FACD66]" : ""
