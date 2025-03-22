@@ -42,7 +42,7 @@ export default function SignInComponent() {
 
     try {
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/signin`,
+        `${process.env.NEXT_PUBLIC_API_URL}/login`,
         form
       );
       localStorage.setItem("token", res.data.access_token);
