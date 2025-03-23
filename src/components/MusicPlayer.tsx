@@ -11,6 +11,7 @@ import {
   FaRedo,
   FaPlus,
   FaCheck,
+  FaVideo,
 } from "react-icons/fa";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -266,6 +267,9 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                 onClick={handleAddToPlaylist}
               >
                 {isAdded ? <FaCheck /> : <FaPlus />}
+              </motion.div>
+              <motion.div className="cursor-pointer hidden md:block text-xl">
+                <FaVideo />
               </motion.div>
               <FaRedo
                 className={`cursor-pointer hidden md:block  text-xl ${
