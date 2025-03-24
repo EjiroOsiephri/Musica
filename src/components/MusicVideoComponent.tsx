@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
 import Image from "next/image";
@@ -15,26 +16,39 @@ interface Video {
 }
 
 export default function MusicVideoComponent() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const searchParams = useSearchParams(); // Get search query from URL
+  const initialSearch = searchParams.get("search") || ""; // Extract 'search' param
+
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchVideos("top music videos");
-  }, []);
+    if (initialSearch) {
+      fetchVideos(initialSearch);
+    }
+  }, [initialSearch]); // Fetch videos when URL changes
 
   const fetchVideos = async (query: string) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=12&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
+          query
+        )}&type=video&maxResults=12&key=${
+          process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
+        }`
       );
-      const fetchedVideos = res.data.items.map((item: any) => ({
-        id: item.id.videoId,
-        title: item.snippet.title,
-        thumbnail: item.snippet.thumbnails.medium.url,
-        url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
-      }));
+
+      const fetchedVideos = res.data.items
+        .filter((item: any) => item.id.videoId)
+        .map((item: any) => ({
+          id: item.id.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.medium.url,
+          url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+        }));
+
       setVideos(fetchedVideos);
     } catch (error) {
       console.error("Error fetching videos:", error);

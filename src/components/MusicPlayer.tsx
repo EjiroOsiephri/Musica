@@ -18,8 +18,7 @@ import { motion } from "framer-motion";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentTrack } from "../utils/musicSlice";
 import toast from "react-hot-toast";
-
-// Removed toast.configure() as it is no longer required in the latest react-toastify API
+import { useRouter } from "next/navigation";
 
 const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -27,6 +26,8 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
   const [volume, setVolume] = useState<number>(50);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+
+  const router = useRouter();
 
   const currentTrack = useSelector(
     (state: {
@@ -198,6 +199,15 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
     }
   };
 
+  const handleVideoRedirect = () => {
+    if (currentTrack?.title) {
+      const searchQuery = encodeURIComponent(currentTrack.title);
+      router.push(`/videos?search=${searchQuery}`); // Navigate to /videos with search query
+    } else {
+      toast.error("No track selected for video search.");
+    }
+  };
+
   return (
     <>
       {
@@ -268,7 +278,11 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
               >
                 {isAdded ? <FaCheck /> : <FaPlus />}
               </motion.div>
-              <motion.div className="cursor-pointer hidden md:block text-xl">
+              <motion.div
+                onClick={handleVideoRedirect}
+                whileTap={{ scale: 1.2 }}
+                className="cursor-pointer hidden md:block text-xl"
+              >
                 <FaVideo />
               </motion.div>
               <FaRedo
