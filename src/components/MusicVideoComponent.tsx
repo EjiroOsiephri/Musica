@@ -27,15 +27,17 @@ export default function MusicVideoComponent() {
     null
   );
 
-  useEffect(() => {
-    fetchVideos("top trending music videos");
-  }, []);
-
-  useEffect(() => {
-    if (initialSearch) {
-      fetchVideos(initialSearch);
-    }
-  }, [initialSearch]);
+  if (!initialSearch) {
+    useEffect(() => {
+      fetchVideos("top trending music videos");
+    }, []);
+  } else {
+    useEffect(() => {
+      if (initialSearch) {
+        fetchVideos(initialSearch);
+      }
+    }, [initialSearch]);
+  }
 
   const fetchVideos = async (query: string) => {
     setLoading(true);

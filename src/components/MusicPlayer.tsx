@@ -201,8 +201,10 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
 
   const handleVideoRedirect = () => {
     if (currentTrack?.title) {
-      const searchQuery = encodeURIComponent(currentTrack.title);
-      router.push(`/videos?search=${searchQuery}`); // Navigate to /videos with search query
+      const searchQuery = encodeURIComponent(
+        currentTrack.title + " " + currentTrack.artist
+      );
+      router.push(`/videos?search=${searchQuery}`);
     } else {
       toast.error("No track selected for video search.");
     }
