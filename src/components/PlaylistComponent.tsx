@@ -94,7 +94,7 @@ const PlaylistComponent = () => {
   return (
     <>
       <Sidebar />
-      <div className="relative min-h-screen text-white pb-32">
+      <div className="absolute min-h-screen text-white pb-44 md:pb-32">
         <div className="absolute inset-0">
           <Image
             src={ImageLead}
@@ -104,7 +104,7 @@ const PlaylistComponent = () => {
             className="opacity-40"
           />
         </div>
-        <div className="relative pl-20 lg:pl-24 p-8 bg-[#121212]/80 min-h-screen space-y-12">
+        <div className="absolute min-w-[100vw] pl-4 lg:pl-24 p-4 bg-[#121212]/80 min-h-screen space-y-12">
           <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 max-w-md">
             <FiSearch className="text-gray-400 text-lg mr-2" />
             <input
@@ -172,7 +172,7 @@ const PlaylistComponent = () => {
               filteredSongs.map((song, index) => (
                 <motion.div
                   key={index}
-                  className="grid grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
+                  className="grid grid-cols-2 gap-6 md:grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
                   whileTap={{ scale: 0.95 }}
                   onClick={() =>
                     handleTrackClick({
