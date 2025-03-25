@@ -110,7 +110,7 @@ export default function PodcastComponent() {
         </h1>
 
         {/* Search Bar */}
-        <section className="flex flex-col md:flex-row justify-center  gap-10 items-center mb-6">
+        <section className="flex flex-col md:flex-row justify-center md:gap-10 items-center mb-6">
           <motion.form
             onSubmit={handleSearch}
             className="flex justify-center mb-6"
