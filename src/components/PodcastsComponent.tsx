@@ -36,6 +36,7 @@ export default function PodcastComponent() {
   const [selectedCategory, setSelectedCategory] = useState("Technology");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [progress, setProgress] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPodcasts(selectedCategory);
@@ -74,19 +75,59 @@ export default function PodcastComponent() {
   };
 
   const handlePlayPause = (url: string, id: string) => {
+    setCurrentPlaying(id);
+
+    if (!url) {
+      setErrorMessage("Audio URL is not available.");
+      return;
+    }
+
+    // Basic check for supported audio formats
+    const supportedFormats = [".mp3", ".ogg", ".wav", ".aac"];
+    const isSupportedFormat = supportedFormats.some((format) =>
+      url.toLowerCase().endsWith(format)
+    );
+
+    if (!isSupportedFormat) {
+      setErrorMessage(
+        "Audio format not supported. Please try a different podcast."
+      );
+      return;
+    } else {
+      setErrorMessage(null); // Clear any previous error messages
+    }
+
     if (currentPlaying === id) {
       if (audioRef.current) {
         audioRef.current.pause();
         setCurrentPlaying(null);
       }
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+      return;
+    }
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+
+    try {
       const newAudio = new Audio(url);
       audioRef.current = newAudio;
-      newAudio.play();
-      setCurrentPlaying(id);
+
+      newAudio.addEventListener("error", (error) => {
+        console.error("Error loading audio:", error);
+        setErrorMessage(
+          "Failed to load audio. The format may not be supported or the URL may be incorrect."
+        );
+        setCurrentPlaying(null);
+      });
+
+      newAudio.play().catch((error) => {
+        console.error("Playback failed:", error);
+        setErrorMessage(
+          "Failed to play audio. Autoplay might be disabled in your browser."
+        );
+        setCurrentPlaying(null);
+      });
 
       newAudio.ontimeupdate = () => {
         setProgress((newAudio.currentTime / newAudio.duration) * 100);
@@ -96,6 +137,10 @@ export default function PodcastComponent() {
         setCurrentPlaying(null);
         setProgress(0);
       };
+    } catch (error: any) {
+      console.error("Error creating audio object:", error);
+      setErrorMessage(`Failed to play audio: ${error.message}`);
+      setCurrentPlaying(null);
     }
   };
 
@@ -215,6 +260,9 @@ export default function PodcastComponent() {
               </motion.div>
             ))}
           </motion.div>
+        )}
+        {errorMessage && (
+          <div className="text-red-500 mt-4">{errorMessage}</div>
         )}
 
         {/* Audio Progress Bar */}
