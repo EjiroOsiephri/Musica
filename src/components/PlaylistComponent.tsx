@@ -56,7 +56,6 @@ const PlaylistComponent = () => {
           const data = await response.json();
           console.log("Fetched Playlist:", data);
 
-          // Filter out duplicate songs based on track_id
           const uniqueSongs: Song[] = Array.from(
             new Map<string | number, Song>(
               data.playlist.map((song: Song) => [song.track_id, song])
@@ -76,7 +75,6 @@ const PlaylistComponent = () => {
     fetchPlaylist();
   }, []);
 
-  // Debounced search - updates after user stops typing for 500ms or on pressing Enter
   useEffect(() => {
     const handler = setTimeout(() => {
       setFilteredSongs(
@@ -94,8 +92,9 @@ const PlaylistComponent = () => {
   return (
     <>
       <Sidebar />
-      <div className="absolute min-h-screen text-white pb-44 md:pb-32">
-        <div className="absolute inset-0">
+      <div className="relative w-full min-h-screen overflow-y-auto overflow-x-hidden text-white  md:pb-28">
+        {/* Background Image */}
+        <div className="absolute inset-0 -z-10">
           <Image
             src={ImageLead}
             alt="Background"
@@ -104,8 +103,11 @@ const PlaylistComponent = () => {
             className="opacity-40"
           />
         </div>
-        <div className="absolute min-w-[100vw] pl-4 lg:pl-24 p-4 bg-[#121212]/80 min-h-screen space-y-12">
-          <div className="flex items-center bg-gray-800 rounded-full px-4 py-2 max-w-md">
+
+        {/* Content Wrapper */}
+        <div className="relative min-w-[100vw] pl-4 lg:pl-24 p-4 bg-[#121212]/80 min-h-screen space-y-12">
+          {/* Search Bar */}
+          <div className="flex items-center bg-gray-800  rounded-full px-4 py-2 max-w-md">
             <FiSearch className="text-gray-400 text-lg mr-2" />
             <input
               type="text"
@@ -126,6 +128,8 @@ const PlaylistComponent = () => {
               }}
             />
           </div>
+
+          {/* Playlist Info */}
           <div className="flex flex-col md:flex-row gap-10">
             <div className="w-56 h-56 relative rounded-lg overflow-hidden">
               <Image
@@ -161,7 +165,9 @@ const PlaylistComponent = () => {
               </div>
             </div>
           </div>
-          <div className="mt-16 space-y-4">
+
+          {/* Song List */}
+          <div className="mt-16 space-y-4 !mb-48 md:!mb-0">
             <div className="grid grid-cols-4 text-gray-400 text-sm pb-3 border-b border-gray-700 px-4">
               <p>Title</p>
               <p>Album</p>
@@ -172,7 +178,7 @@ const PlaylistComponent = () => {
               filteredSongs.map((song, index) => (
                 <motion.div
                   key={index}
-                  className="grid grid-cols-2 gap-6 md:grid-cols-4 items-center p-4 bg-[#111827cc] rounded-lg"
+                  className="grid grid-cols-2 gap-6 md:grid-cols-4 items-center p-4  bg-[#111827cc]/80 rounded-lg"
                   whileTap={{ scale: 0.95 }}
                   onClick={() =>
                     handleTrackClick({
@@ -187,7 +193,7 @@ const PlaylistComponent = () => {
                     })
                   }
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 ">
                     <div className="w-12 h-12 relative rounded-md overflow-hidden">
                       <Image
                         src={song?.image || "/dummy-song.jpg"}
