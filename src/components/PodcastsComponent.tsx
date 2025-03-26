@@ -9,6 +9,7 @@ import { ClipLoader } from "react-spinners";
 import Sidebar from "./SideBar";
 import { FaChevronDown } from "react-icons/fa";
 import { DOMParser } from "xmldom";
+import ImageLead from "../../public/DALL·E 2025-03-26 09.24.50 - A modern, dark-themed podcast studio background featuring a professional microphone, headphones, and subtle sound waves in the air. The lighting is mo.webp";
 
 interface Podcast {
   id: string;
@@ -183,7 +184,16 @@ export default function PodcastComponent() {
   return (
     <>
       <Sidebar />
-      <div className="lg:pl-24 p-3 md:p-8 min-h-screen bg-[#0F0F0F] text-white">
+      <div className="lg:pl-24 p-3 md:p-8 min-h-screen  text-white">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src={ImageLead}
+            alt="Background"
+            layout="fill"
+            objectFit="cover"
+            className="opacity-10"
+          />
+        </div>
         <h1 className="text-3xl font-bold text-center mb-6">
           Popular Podcasts
         </h1>
@@ -198,7 +208,7 @@ export default function PodcastComponent() {
           >
             <input
               type="text"
-              placeholder="Search podcasts or enter feed URL..."
+              placeholder="Search podcasts"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="p-2 w-64 bg-[#1D2123] text-white rounded-l focus:outline-none"
@@ -295,14 +305,15 @@ export default function PodcastComponent() {
             ))}
           </motion.div>
         )}
-        {errorMessage && (
+        {/* {errorMessage && (
           <div className="text-red-500 mt-4">{errorMessage}</div>
-        )}
+        )} */}
 
         {/* Audio Progress Bar */}
+
         {currentPlaying && (
           <motion.div
-            className="fixed bottom-0 left-0 right-0 bg-[#1D2123] p-4"
+            className="fixed bottom-0 left-0 md:left-16 right-0 bg-[#1D2123] p-4 z-50"
             initial={{ y: 100 }}
             animate={{ y: 0 }}
           >
