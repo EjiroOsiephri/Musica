@@ -42,6 +42,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
           track_id: string | number;
           user_id: string | number;
         };
+        trackHistory: any[];
       };
     }) => state.music.currentTrack
   );

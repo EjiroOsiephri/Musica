@@ -167,7 +167,7 @@ const PlaylistComponent = () => {
           </div>
 
           {/* Song List */}
-          <div className="mt-16 space-y-4 !mb-48 md:!mb-0">
+          <div className="mt-16 space-y-4 !mb-48 md:!mb-10">
             <div className="grid grid-cols-4 text-gray-400 text-sm pb-3 border-b border-gray-700 px-4">
               <p>Title</p>
               <p>Album</p>

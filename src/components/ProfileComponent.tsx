@@ -1,0 +1,374 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import axios from "axios";
+import Image from "next/image";
+import { toast } from "react-hot-toast";
+import Sidebar from "../components/SideBar";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const profileVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.8 } },
+};
+
+export default function Profile() {
+  interface User {
+    firstname: string;
+    lastname: string;
+    phone: string;
+    email: string;
+    profile_picture?: string;
+  }
+
+  const [user, setUser] = useState<User | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    phone: "",
+    password: "",
+  });
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [topArtists, setTopArtists] = useState<any[]>([]);
+  const [topTracks, setTopTracks] = useState<any[]>([]);
+
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 200], [0, 100]);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await axios.get(`${API_URL}/profile`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        console.log(res.data);
+
+        setUser(res.data);
+        setFormData({
+          firstname: res.data.firstname,
+          lastname: res.data.lastname,
+          phone: res.data.phone,
+          password: "",
+        });
+      } catch (err) {
+        toast.error("Failed to load profile");
+      }
+    }
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!file) {
+      setPreview(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreview(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await axios.put(`${API_URL}/profile/update`, formData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      toast.success("Profile updated successfully");
+      setUser((prev) => (prev ? { ...prev, ...formData } : null));
+      setEditMode(false);
+    } catch (err) {
+      toast.error("Update failed");
+    }
+  };
+
+  const uploadProfilePicture = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await axios.post(`${API_URL}/profile/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setUser((prev) =>
+        prev
+          ? {
+              ...prev,
+              profile_picture: res.data.profile_picture,
+            }
+          : null
+      );
+      toast.success("Profile picture updated");
+      setFile(null);
+    } catch (err) {
+      toast.error("Failed to upload image");
+    }
+  };
+
+  // Simulate fetching top artists and tracks from MusicPlayer's data
+  useEffect(() => {
+    // Normally, this data would come from the redux store after songs have been played
+    // or, you'd fetch this from your API using the logged-in user's song history
+    // For this example, we'll create dummy data
+    const dummyArtists = [
+      { id: 1, name: "Artist 1", image: "/images/artist1.jpg" },
+      { id: 2, name: "Artist 2", image: "/images/artist2.jpg" },
+      { id: 3, name: "Artist 3", image: "/images/artist3.jpg" },
+    ];
+    const dummyTracks = [
+      {
+        id: 1,
+        title: "Track 1",
+        artist: "Artist 1",
+        image: "/images/track1.jpg",
+      },
+      {
+        id: 2,
+        title: "Track 2",
+        artist: "Artist 2",
+        image: "/images/track2.jpg",
+      },
+      {
+        id: 3,
+        title: "Track 3",
+        artist: "Artist 3",
+        image: "/images/track3.jpg",
+      },
+    ];
+
+    setTopArtists(dummyArtists);
+    setTopTracks(dummyTracks);
+  }, []);
+
+  return (
+    <>
+      <Sidebar />
+      <motion.div
+        className="min-h pl-4 lg:pl-24 p-4-screen bg-spotify-black text-white"
+        variants={profileVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div
+          className="h-64 bg-gradient-to-b from-[#609EAF] to-spotify-black/50"
+          style={{ y }}
+        >
+          <div className="container mx-auto px-4 py-6 flex items-end gap-6 h-full">
+            <motion.div
+              className="relative w-44 h-44 shadow-2xl"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              {preview || user?.profile_picture ? (
+                <Image
+                  src={
+                    preview ||
+                    (user?.profile_picture ? `/${user.profile_picture}` : "")
+                  }
+                  alt="Profile"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-spotify-gray flex items-center justify-center text-5xl font-bold rounded-full">
+                  {user?.firstname?.[0] || "U"}
+                </div>
+              )}
+            </motion.div>
+
+            <div className="space-y-4">
+              <motion.h1
+                className="text-4xl font-bold"
+                initial={{ x: -20 }}
+                animate={{ x: 0 }}
+              >
+                {user?.firstname} {user?.lastname}
+              </motion.h1>
+              <div className="flex gap-4 text-spotify-gray">
+                <p>{user?.email}</p>
+                <p>{user?.phone}</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="container mx-auto px-4 py-8">
+          <motion.div
+            className="bg-spotify-dark-gray p-6 rounded-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <div className="flex gap-4 mb-6">
+              <motion.input
+                type="file"
+                onChange={handleFileChange}
+                className="hidden"
+                id="avatar-upload"
+                whileTap={{ scale: 0.95 }}
+              />
+              <motion.label
+                htmlFor="avatar-upload"
+                className="px-6 py-2 bg-[#609EAF] text-black rounded-full cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Upload Photo
+              </motion.label>
+
+              <motion.button
+                onClick={() => setEditMode(!editMode)}
+                className="px-6 py-2 border-2 border-white rounded-full"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {editMode ? "Cancel" : "Edit Profile"}
+              </motion.button>
+            </div>
+            <AnimatePresence mode="wait">
+              {editMode ? (
+                <motion.form
+                  key="edit-form"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  onSubmit={handleSubmit}
+                  className="space-y-4"
+                >
+                  <input
+                    type="text"
+                    name="firstname"
+                    value={formData.firstname}
+                    onChange={handleChange}
+                    placeholder="First Name"
+                    className="w-full p-3 bg-transparent border border-[#609EAF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#609EAF]"
+                  />
+                  <input
+                    type="text"
+                    name="lastname"
+                    value={formData.lastname}
+                    onChange={handleChange}
+                    placeholder="Last Name"
+                    className="w-full p-3 bg-transparent border border-[#609EAF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#609EAF]"
+                  />
+                  <input
+                    type="text"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Phone"
+                    className="w-full p-3 bg-transparent border border-[#609EAF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#609EAF]"
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="New Password (Optional)"
+                    className="w-full p-3 bg-transparent border border-[#609EAF] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#609EAF]"
+                  />
+                  <motion.button
+                    type="submit"
+                    className="w-full px-6 py-3 bg-[#609EAF] text-black rounded-full font-bold"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Save Changes
+                  </motion.button>
+                </motion.form>
+              ) : (
+                <motion.div
+                  key="profile-info"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  className="space-y-4"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors">
+                      <h3 className="text-[#609EAF] mb-2">Email</h3>
+                      <p className="truncate">{user?.email}</p>
+                    </div>
+                    <div className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors">
+                      <h3 className="text-[#609EAF] mb-2">Phone</h3>
+                      <p>{user?.phone}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
+        {/* Top Artists Section */}
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-2xl font-bold mb-4">Top Artists This Month</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {topArtists.map((artist) => (
+              <motion.div
+                key={artist.id}
+                className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Image
+                  src={artist.image}
+                  alt={artist.name}
+                  width={200}
+                  height={200}
+                  className="rounded-full object-cover mb-2"
+                />
+                <h3 className="text-[#609EAF] text-center">{artist.name}</h3>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Tracks Section */}
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-2xl font-bold mb-4">Top Tracks</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {topTracks.map((track) => (
+              <motion.div
+                key={track.id}
+                className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
+                whileHover={{ scale: 1.05 }}
+              >
+                <Image
+                  src={track.image}
+                  alt={track.title}
+                  width={200}
+                  height={200}
+                  className="object-cover mb-2"
+                />
+                <h3 className="text-[#609EAF]">{track.title}</h3>
+                <p className="text-spotify-gray">By {track.artist}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </>
+  );
+}
