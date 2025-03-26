@@ -8,6 +8,7 @@ import Image from "next/image";
 import { ClipLoader } from "react-spinners";
 import Sidebar from "./SideBar";
 import { FaChevronDown } from "react-icons/fa";
+import { DOMParser } from "xmldom";
 
 interface Podcast {
   id: string;
@@ -42,6 +43,40 @@ export default function PodcastComponent() {
     fetchPodcasts(selectedCategory);
   }, [selectedCategory]);
 
+  const parseRssFeed = async (feedUrl: string) => {
+    try {
+      const res = await axios.get(feedUrl);
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(res.data, "text/xml");
+
+      const items = xmlDoc.getElementsByTagName("item");
+      const parsedPodcasts = Array.from(items).map((item: any) => ({
+        id: item.getElementsByTagName("guid")[0]?.textContent || "",
+        title:
+          item.getElementsByTagName("title")[0]?.textContent ||
+          "Untitled Episode",
+        publisher:
+          xmlDoc.getElementsByTagName("title")[0]?.textContent ||
+          "Unknown Publisher",
+        thumbnail:
+          xmlDoc
+            .getElementsByTagName("image")[0]
+            ?.getElementsByTagName("url")[0]?.textContent ||
+          "/default-thumbnail.jpg", // Fallback thumbnail
+        audio_url:
+          item.getElementsByTagName("enclosure")[0]?.getAttribute("url") || "",
+        description:
+          item.getElementsByTagName("description")[0]?.textContent ||
+          "No description available.",
+      }));
+
+      return parsedPodcasts;
+    } catch (error) {
+      console.error("Error parsing RSS feed:", error);
+      return [];
+    }
+  };
+
   const fetchPodcasts = async (query: string) => {
     setLoading(true);
     try {
@@ -71,31 +106,28 @@ export default function PodcastComponent() {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
-    fetchPodcasts(searchTerm);
+
+    if (searchTerm.startsWith("http")) {
+      const parsedPodcasts = await parseRssFeed(searchTerm);
+      setPodcasts(parsedPodcasts);
+    } else {
+      await fetchPodcasts(searchTerm);
+    }
   };
 
-  const handlePlayPause = (url: string, id: string) => {
-    setCurrentPlaying(id);
-
+  const handlePlayPause = async (url: string, id: string) => {
     if (!url) {
       setErrorMessage("Audio URL is not available.");
       return;
     }
 
-    // Basic check for supported audio formats
+    console.log("Playing audio:", url);
+    const parsedFeed = await parseRssFeed(url);
+
     const supportedFormats = [".mp3", ".ogg", ".wav", ".aac"];
     const isSupportedFormat = supportedFormats.some((format) =>
       url.toLowerCase().endsWith(format)
     );
-
-    if (!isSupportedFormat) {
-      setErrorMessage(
-        "Audio format not supported. Please try a different podcast."
-      );
-      return;
-    } else {
-      setErrorMessage(null); // Clear any previous error messages
-    }
 
     if (currentPlaying === id) {
       if (audioRef.current) {
@@ -110,7 +142,7 @@ export default function PodcastComponent() {
     }
 
     try {
-      const newAudio = new Audio(url);
+      const newAudio = new Audio(parsedFeed[0].audio_url);
       audioRef.current = newAudio;
 
       newAudio.addEventListener("error", (error) => {
@@ -128,6 +160,8 @@ export default function PodcastComponent() {
         );
         setCurrentPlaying(null);
       });
+
+      setCurrentPlaying(id);
 
       newAudio.ontimeupdate = () => {
         setProgress((newAudio.currentTime / newAudio.duration) * 100);
@@ -164,7 +198,7 @@ export default function PodcastComponent() {
           >
             <input
               type="text"
-              placeholder="Search podcasts..."
+              placeholder="Search podcasts or enter feed URL..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="p-2 w-64 bg-[#1D2123] text-white rounded-l focus:outline-none"
