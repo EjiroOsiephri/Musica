@@ -185,9 +185,9 @@ export default function Profile() {
         animate="visible"
       >
         <motion.div className="h-64 bg-gradient-to-b from-[#609EAF] to-spotify-black/50">
-          <div className="container mx-auto px-4 py-6 flex items-end gap-6 h-full">
+          <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-end gap-6 h-full">
             <motion.div
-              className="relative w-44 h-44 shadow-2xl"
+              className="relative w-32 h-32 md:w-44 md:h-44 shadow-2xl"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -203,7 +203,7 @@ export default function Profile() {
                   className="rounded-full"
                 />
               ) : (
-                <div className="w-full h-full bg-spotify-gray flex items-center justify-center text-5xl font-bold rounded-full">
+                <div className="w-full h-full bg-spotify-gray flex items-center justify-center text-4xl md:text-5xl font-bold rounded-full">
                   {user?.firstname?.[0] || "U"}
                 </div>
               )}
@@ -211,13 +211,13 @@ export default function Profile() {
 
             <div className="space-y-4">
               <motion.h1
-                className="text-4xl font-bold"
+                className="text-2xl md:text-4xl font-bold"
                 initial={{ x: -20 }}
                 animate={{ x: 0 }}
               >
                 {user?.firstname} {user?.lastname}
               </motion.h1>
-              <div className="flex gap-4 text-spotify-gray">
+              <div className="flex flex-col md:flex-row gap-4 text-spotify-gray">
                 <p>{user?.email}</p>
                 <p>{user?.phone}</p>
               </div>
@@ -316,7 +316,7 @@ export default function Profile() {
                   className="space-y-4"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors">
+                    <div className="p-4  bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors">
                       <h3 className="text-[#609EAF] mb-2">Email</h3>
                       <p className="truncate">{user?.email}</p>
                     </div>
@@ -333,12 +333,14 @@ export default function Profile() {
 
         {/* Top Artists Section */}
         <div className="container mx-auto px-4 py-4 md:py-8">
-          <h2 className="text-2xl font-bold mb-4">Top Artists</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center md:text-left">
+            Top Artists
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
             {topArtists.map((track) => (
               <motion.div
                 key={track.name}
-                className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
+                className="p-4 bg-spotify-black m-auto md:m-0 rounded-lg hover:bg-spotify-gray transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
                 <Image
@@ -346,7 +348,7 @@ export default function Profile() {
                   alt={track.name}
                   width={150}
                   height={150}
-                  className="object-cover mb-2 rounded-3xl"
+                  className="object-cover w-[100vw] md:w-[initial] mb-2 rounded-3xl"
                 />
                 <h3 className="text-[#609EAF]">{track.name}</h3>
               </motion.div>
@@ -356,12 +358,14 @@ export default function Profile() {
 
         {/* Top Tracks Section */}
         <div className="container mx-auto px-4 py-4 md:py-8">
-          <h2 className="text-2xl font-bold mb-4">Top Tracks</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center md:text-left">
+            Top Tracks
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
             {topTracks.map((track) => (
               <motion.div
                 key={track.id}
-                className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
+                className="p-4 m-auto md:m-0 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
                 <Image
@@ -369,7 +373,7 @@ export default function Profile() {
                   alt={track.title}
                   width={150}
                   height={150}
-                  className="object-cover mb-2"
+                  className="object-cover mb-2 w-[100vw] md:w-[initial] rounded-3xl"
                 />
                 <h3 className="text-[#609EAF]">{track.title}</h3>
                 <p className="text-spotify-gray">By {track.artist}</p>
