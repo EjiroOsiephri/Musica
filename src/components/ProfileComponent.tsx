@@ -348,7 +348,7 @@ export default function Profile() {
                   alt={track.name}
                   width={150}
                   height={150}
-                  className="object-cover w-[100vw] md:w-[initial] mb-2 rounded-3xl"
+                  className="object-cover w-[100vw] md:w-[15rem] mb-2 rounded-3xl"
                 />
                 <h3 className="text-[#609EAF]">{track.name}</h3>
               </motion.div>
@@ -373,7 +373,7 @@ export default function Profile() {
                   alt={track.title}
                   width={150}
                   height={150}
-                  className="object-cover mb-2 w-[100vw] md:w-[initial] rounded-3xl"
+                  className="object-cover mb-2 w-[100vw] md:w-[14rem] rounded-3xl"
                 />
                 <h3 className="text-[#609EAF]">{track.title}</h3>
                 <p className="text-spotify-gray">By {track.artist}</p>
