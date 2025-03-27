@@ -122,6 +122,8 @@ export default function Profile() {
       );
       toast.success("Profile picture updated");
       setFile(null);
+      // Save the updated profile picture to local storage to persist after reload
+      localStorage.setItem("profile_picture", res.data.profile_picture);
     } catch (err) {
       toast.error("Failed to upload image");
     }
@@ -177,15 +179,12 @@ export default function Profile() {
     <>
       <Sidebar />
       <motion.div
-        className="min-h pl-4 lg:pl-24 p-4-screen bg-spotify-black text-white"
+        className="min-h-screen pl-4 lg:pl-24 p-4-screen bg-spotify-black text-white overflow-y-scroll"
         variants={profileVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div
-          className="h-64 bg-gradient-to-b from-[#609EAF] to-spotify-black/50"
-          style={{ y }}
-        >
+        <motion.div className="h-64 bg-gradient-to-b from-[#609EAF] to-spotify-black/50">
           <div className="container mx-auto px-4 py-6 flex items-end gap-6 h-full">
             <motion.div
               className="relative w-44 h-44 shadow-2xl"
@@ -248,7 +247,6 @@ export default function Profile() {
               >
                 Upload Photo
               </motion.label>
-
               <motion.button
                 onClick={() => setEditMode(!editMode)}
                 className="px-6 py-2 border-2 border-white rounded-full"
@@ -334,32 +332,32 @@ export default function Profile() {
         </div>
 
         {/* Top Artists Section */}
-        <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold mb-4">Top Artists This Month</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {topArtists.map((artist) => (
+        <div className="container mx-auto px-4 py-4 md:py-8">
+          <h2 className="text-2xl font-bold mb-4">Top Artists</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
+            {topArtists.map((track) => (
               <motion.div
-                key={artist.name}
+                key={track.name}
                 className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
                 <Image
-                  src={artist.image}
-                  alt={artist.name}
-                  width={200}
-                  height={200}
-                  className="rounded-full object-cover mb-2"
+                  src={track.image}
+                  alt={track.name}
+                  width={150}
+                  height={150}
+                  className="object-cover mb-2 rounded-3xl"
                 />
-                <h3 className="text-[#609EAF] text-center">{artist.name}</h3>
+                <h3 className="text-[#609EAF]">{track.name}</h3>
               </motion.div>
             ))}
           </div>
         </div>
 
         {/* Top Tracks Section */}
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-4 md:py-8">
           <h2 className="text-2xl font-bold mb-4">Top Tracks</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
             {topTracks.map((track) => (
               <motion.div
                 key={track.id}
@@ -369,8 +367,8 @@ export default function Profile() {
                 <Image
                   src={track.image}
                   alt={track.title}
-                  width={200}
-                  height={200}
+                  width={150}
+                  height={150}
                   className="object-cover mb-2"
                 />
                 <h3 className="text-[#609EAF]">{track.title}</h3>
