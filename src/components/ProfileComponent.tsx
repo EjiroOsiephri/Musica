@@ -11,6 +11,7 @@ import axios from "axios";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import Sidebar from "../components/SideBar";
+import { useSelector } from "react-redux";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -38,7 +39,6 @@ export default function Profile() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [topArtists, setTopArtists] = useState<any[]>([]);
   const [topTracks, setTopTracks] = useState<any[]>([]);
 
   const { scrollY } = useScroll();
@@ -127,40 +127,51 @@ export default function Profile() {
     }
   };
 
-  // Simulate fetching top artists and tracks from MusicPlayer's data
-  useEffect(() => {
-    // Normally, this data would come from the redux store after songs have been played
-    // or, you'd fetch this from your API using the logged-in user's song history
-    // For this example, we'll create dummy data
-    const dummyArtists = [
-      { id: 1, name: "Artist 1", image: "/images/artist1.jpg" },
-      { id: 2, name: "Artist 2", image: "/images/artist2.jpg" },
-      { id: 3, name: "Artist 3", image: "/images/artist3.jpg" },
-    ];
-    const dummyTracks = [
-      {
-        id: 1,
-        title: "Track 1",
-        artist: "Artist 1",
-        image: "/images/track1.jpg",
-      },
-      {
-        id: 2,
-        title: "Track 2",
-        artist: "Artist 2",
-        image: "/images/track2.jpg",
-      },
-      {
-        id: 3,
-        title: "Track 3",
-        artist: "Artist 3",
-        image: "/images/track3.jpg",
-      },
-    ];
+  const fetchArtistImage = async (artistName: string) => {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-    setTopArtists(dummyArtists);
-    setTopTracks(dummyTracks);
-  }, []);
+      const response = await fetch(
+        `${API_URL}/api/artist-image?artist=${encodeURIComponent(artistName)}`
+      );
+      const data = await response.json();
+
+      return data?.image || "/images/default-artist.jpg";
+    } catch (error) {
+      console.error(`Error fetching image for ${artistName}:`, error);
+      return "/images/default-artist.jpg"; // Fallback image
+    }
+  };
+
+  const trackHistory = useSelector(
+    (state: { music: { trackHistory: any[] } }) => state.music.trackHistory
+  );
+
+  const [topArtists, setTopArtists] = useState<
+    { name: string; image: string }[]
+  >([]);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      const uniqueArtists = [
+        ...new Set(trackHistory.map((track) => track.artist)),
+      ];
+
+      const artistsWithImages = await Promise.all(
+        uniqueArtists.map(async (artist) => {
+          const imageUrl = await fetchArtistImage(artist);
+          return { name: artist, image: imageUrl };
+        })
+      );
+
+      setTopArtists(artistsWithImages);
+      setTopTracks(trackHistory.slice(0, 3));
+    };
+
+    if (trackHistory.length > 0) {
+      fetchArtists();
+    }
+  }, [trackHistory]);
 
   return (
     <>
@@ -328,7 +339,7 @@ export default function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {topArtists.map((artist) => (
               <motion.div
-                key={artist.id}
+                key={artist.name}
                 className="p-4 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
                 whileHover={{ scale: 1.05 }}
               >
