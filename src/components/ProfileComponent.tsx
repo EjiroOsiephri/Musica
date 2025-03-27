@@ -350,7 +350,9 @@ export default function Profile() {
                   height={150}
                   className="object-cover w-[100vw] md:w-[15rem] mb-2 rounded-3xl"
                 />
-                <h3 className="text-[#609EAF]">{track.name}</h3>
+                <h3 className="text-[#609EAF] text-center md:text-left">
+                  {track.name}
+                </h3>
               </motion.div>
             ))}
           </div>
@@ -375,8 +377,12 @@ export default function Profile() {
                   height={150}
                   className="object-cover mb-2 w-[100vw] md:w-[14rem] rounded-3xl"
                 />
-                <h3 className="text-[#609EAF]">{track.title}</h3>
-                <p className="text-spotify-gray">By {track.artist}</p>
+                <h3 className="text-[#609EAF] text-center md:text-left">
+                  {track.title}
+                </h3>
+                <p className="text-spotify-gray text-center md:text-left">
+                  By {track.artist}
+                </p>
               </motion.div>
             ))}
           </div>
