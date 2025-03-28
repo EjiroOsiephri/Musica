@@ -187,7 +187,7 @@ export default function Profile() {
     <>
       <Sidebar />
       <motion.div
-        className="min-h-screen pl-4 lg:pl-24 p-4-screen bg-spotify-black text-white overflow-y-scroll"
+        className="min-h-screen md:pl-4 lg:pl-24 p-4-screen bg-spotify-black text-white overflow-y-scroll"
         variants={profileVariants}
         initial="hidden"
         animate="visible"
@@ -195,7 +195,7 @@ export default function Profile() {
         <motion.div className="h-64 bg-gradient-to-b from-[#609EAF] to-spotify-black/50">
           <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-end gap-6 h-full">
             <motion.div
-              className="relative w-32 h-32 md:w-44 md:h-44 shadow-2xl"
+              className="relative w-32 h-32 md:w-44 md:h-44 md:m-[initial] md:mb-[initial]  m-auto mb-6 shadow-2xl"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
@@ -214,15 +214,15 @@ export default function Profile() {
 
             <div className="space-y-4">
               <motion.h1
-                className="text-2xl md:text-4xl font-bold"
+                className="text-2xl text-center md:text-[white] md:text-4xl font-bold"
                 initial={{ x: -20 }}
                 animate={{ x: 0 }}
               >
                 {user?.firstname} {user?.lastname}
               </motion.h1>
               <div className="flex flex-col md:flex-row gap-4 text-spotify-gray">
-                <p>{user?.email}</p>
-                <p>{user?.phone}</p>
+                <p className="text-center md:text-[white]"> {user?.email}</p>
+                <p className="text-center md:text-[white]">{user?.phone}</p>
               </div>
             </div>
           </div>
@@ -234,21 +234,24 @@ export default function Profile() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <div className="flex gap-4 mb-6">
-              <motion.input
-                type="file"
-                onChange={handleFileChange}
-                id="avatar-upload"
-                whileTap={{ scale: 0.95 }}
-              />
-              <motion.button
-                className="px-6 py-2 bg-[#609EAF] text-white rounded-full cursor-pointer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={uploadProfilePicture}
-              >
-                Upload Photo
-              </motion.button>
+            <div className="flex flex-col md:flex-row gap-4 mt-8 md:mt-[initial] mb-6">
+              <div className="m-6 md:m-[initial]">
+                <motion.input
+                  type="file"
+                  onChange={handleFileChange}
+                  id="avatar-upload"
+                  className="w-[12rem] md:w-[initial] mb-5 md:mb-[initial]"
+                  whileTap={{ scale: 0.95 }}
+                />
+                <motion.button
+                  className="px-6 py-2 bg-[#609EAF] text-white rounded-full cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={uploadProfilePicture}
+                >
+                  Upload Photo
+                </motion.button>
+              </div>
               <motion.button
                 onClick={() => setEditMode(!editMode)}
                 className="px-6 py-2 border-2 border-white rounded-full"
