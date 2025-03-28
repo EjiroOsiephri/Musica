@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       "is1-ssl.mzstatic.com",
       "lastfm.freetls.fastly.net",
       "cdn-images.dzcdn.net",
+      "musica-backend-with-flask.onrender.com",
     ],
   },
   async headers() {

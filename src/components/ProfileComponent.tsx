@@ -39,6 +39,7 @@ export default function Profile() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [topTracks, setTopTracks] = useState<any[]>([]);
 
   const { scrollY } = useScroll();
@@ -59,6 +60,8 @@ export default function Profile() {
           phone: res.data.phone,
           password: "",
         });
+
+        localStorage.setItem("profile_picture", res.data.profile_picture || "");
       } catch (err) {
         toast.error("Failed to load profile");
       }
@@ -112,6 +115,7 @@ export default function Profile() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
+      console.log(res.data);
       setUser((prev) =>
         prev
           ? {
@@ -122,7 +126,11 @@ export default function Profile() {
       );
       toast.success("Profile picture updated");
       setFile(null);
-      // Save the updated profile picture to local storage to persist after reload
+
+      const { profile_picture } = res.data;
+
+      setImagePreview(profile_picture);
+
       localStorage.setItem("profile_picture", res.data.profile_picture);
     } catch (err) {
       toast.error("Failed to upload image");
@@ -192,14 +200,9 @@ export default function Profile() {
               transition={{ type: "spring", stiffness: 300 }}
             >
               {preview || user?.profile_picture ? (
-                <Image
-                  src={
-                    preview ||
-                    (user?.profile_picture ? `/${user.profile_picture}` : "")
-                  }
+                <img
+                  src={imagePreview || preview || user?.profile_picture}
                   alt="Profile"
-                  layout="fill"
-                  objectFit="cover"
                   className="rounded-full"
                 />
               ) : (
@@ -235,18 +238,17 @@ export default function Profile() {
               <motion.input
                 type="file"
                 onChange={handleFileChange}
-                className="hidden"
                 id="avatar-upload"
                 whileTap={{ scale: 0.95 }}
               />
-              <motion.label
-                htmlFor="avatar-upload"
-                className="px-6 py-2 bg-[#609EAF] text-black rounded-full cursor-pointer"
+              <motion.button
+                className="px-6 py-2 bg-[#609EAF] text-white rounded-full cursor-pointer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={uploadProfilePicture}
               >
                 Upload Photo
-              </motion.label>
+              </motion.button>
               <motion.button
                 onClick={() => setEditMode(!editMode)}
                 className="px-6 py-2 border-2 border-white rounded-full"
@@ -300,7 +302,7 @@ export default function Profile() {
                   />
                   <motion.button
                     type="submit"
-                    className="w-full px-6 py-3 bg-[#609EAF] text-black rounded-full font-bold"
+                    className="w-full px-6 py-3 bg-[#609EAF] text-white rounded-full font-bold"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
