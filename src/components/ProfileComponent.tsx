@@ -51,7 +51,6 @@ export default function Profile() {
         const res = await axios.get(`${API_URL}/profile`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        console.log(res.data);
 
         setUser(res.data);
         setFormData({
