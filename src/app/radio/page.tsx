@@ -1,3 +1,5 @@
+"use client";
+
 import PodcastComponent from "../../components/PodcastsComponent";
 import useAuth from "@/hooks/useAuth";
 

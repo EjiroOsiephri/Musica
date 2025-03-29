@@ -1,3 +1,5 @@
+"use client";
+
 import MusicVideoComponent from "@/components/MusicVideoComponent";
 import useAuth from "@/hooks/useAuth";
 

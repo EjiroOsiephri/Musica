@@ -22,7 +22,8 @@ export default function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingLogout, setLoadingLogout] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const currentRoute = usePathname();
 
   useEffect(() => {
@@ -33,12 +34,11 @@ export default function Sidebar() {
   }, []);
 
   const handleLogout = async () => {
-    setLoading(true);
+    setLoadingLogout(true);
     try {
       const res = await fetch(`${API_URL}/logout`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
@@ -53,32 +53,31 @@ export default function Sidebar() {
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
-      setLoading(false);
+      setLoadingLogout(false);
     }
   };
 
   const handleDeleteAccount = async () => {
     if (!confirm("Are you sure? This action cannot be undone!")) return;
-    setLoading(true);
+    setLoadingDelete(true);
     try {
       const res = await fetch(`${API_URL}/profile/delete`, {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
       console.log("Delete account response:", res);
       if (res.ok) {
-        router.push("/signup");
+        router.push("/authform/signup");
       } else {
         alert("Failed to delete account");
       }
     } catch (error) {
       console.error("Delete account error:", error);
     } finally {
-      setLoading(false);
+      setLoadingDelete(false);
     }
   };
 
@@ -198,11 +197,11 @@ export default function Sidebar() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleDeleteAccount}
-                  disabled={loading}
+                  disabled={loadingDelete}
                 >
-                  {loading ? (
+                  {loadingDelete && (
                     <ImSpinner8 className="animate-spin mr-2" />
-                  ) : null}
+                  )}
                   Delete Account
                 </motion.button>
                 <motion.button
@@ -210,11 +209,11 @@ export default function Sidebar() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleLogout}
-                  disabled={loading}
+                  disabled={loadingLogout}
                 >
-                  {loading ? (
+                  {loadingLogout && (
                     <ImSpinner8 className="animate-spin mr-2" />
-                  ) : null}
+                  )}
                   Logout
                 </motion.button>
               </div>

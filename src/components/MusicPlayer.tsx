@@ -226,7 +226,7 @@ const MusicPlayer = ({ playlist }: { playlist: any[] }) => {
                 className="rounded-md"
               />
               <div>
-                <h3 className="text-lg font-bold">
+                <h3 className="text-lg truncate w-36 md:[w-initial] font-bold">
                   {currentTrack?.title || "No Track Selected"}
                 </h3>
                 <p className="text-sm text-gray-400">

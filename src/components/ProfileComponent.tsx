@@ -52,6 +52,8 @@ export default function Profile() {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 
+        console.log(res);
+
         setUser(res.data);
         setFormData({
           firstname: res.data.firstname,
@@ -143,6 +145,7 @@ export default function Profile() {
       const response = await fetch(
         `${API_URL}/api/artist-image?artist=${encodeURIComponent(artistName)}`
       );
+
       const data = await response.json();
 
       return data?.image || "/images/default-artist.jpg";
@@ -200,7 +203,7 @@ export default function Profile() {
             >
               {preview || user?.profile_picture ? (
                 <img
-                  src={imagePreview || preview || user?.profile_picture}
+                  src={imagePreview || ""}
                   alt="Profile"
                   className="rounded-full"
                 />
@@ -370,7 +373,7 @@ export default function Profile() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
             {topTracks.map((track) => (
               <motion.div
-                key={track.id}
+                key={track.title}
                 className="p-4 m-auto md:m-0 bg-spotify-black rounded-lg hover:bg-spotify-gray transition-colors"
                 whileHover={{ scale: 1.05 }}
               >

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 import {
   FaHeart,
@@ -17,7 +17,7 @@ import Logo from "../../public/logo.png";
 import Image from "next/image";
 import { FaRadio } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
-import Sidebar from "./SideBar";
+import { ImSpinner8 } from "react-icons/im";
 import { setSearchResults } from "@/utils/musicSlice";
 import { setCurrentTrack } from "@/utils/musicSlice";
 
@@ -49,11 +49,71 @@ function msToTime(duration: number): string {
 }
 
 export default function Dashboard() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const dispatch = useDispatch();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [loadingLogout, setLoadingLogout] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  useEffect(() => {
+    const updateView = () => setIsMobileView(window.innerWidth < 1024);
+    updateView();
+    window.addEventListener("resize", updateView);
+    return () => window.removeEventListener("resize", updateView);
+  }, []);
+
+  const handleLogout = async () => {
+    setLoadingLogout(true);
+    try {
+      const res = await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("Logout response:", res);
+
+      if (res.ok) {
+        router.push("/authform/signin");
+      } else {
+        alert("Logout failed");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoadingLogout(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("Are you sure? This action cannot be undone!")) return;
+    setLoadingDelete(true);
+    try {
+      const res = await fetch(`${API_URL}/profile/delete`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("Delete account response:", res);
+      if (res.ok) {
+        router.push("/authform/signup");
+      } else {
+        alert("Failed to delete account");
+      }
+    } catch (error) {
+      console.error("Delete account error:", error);
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
 
   const handleTrackClick = (track: any) => {
     dispatch(setCurrentTrack(track));
@@ -172,7 +232,12 @@ export default function Dashboard() {
 
   const bottomItems = [
     { icon: <FaUser size={25} />, label: "Profile", route: "/profile" },
-    { icon: <FaSignOutAlt size={25} />, label: "Logout", route: "/logout" },
+    {
+      icon: <FaSignOutAlt size={25} />,
+      label: "Logout",
+      route: "/logout",
+      action: () => setShowLogoutModal(true),
+    },
   ];
 
   const handleLikeClick = (playlistIndex: number) => {
@@ -301,11 +366,11 @@ export default function Dashboard() {
           {bottomItems.map((item, index) => (
             <motion.div
               key={index}
-              className={`flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col  ${
-                currentRoute === item.route ? "text-yellow-500" : ""
+              className={`flex items-center space-x-4 cursor-pointer lg:justify-center lg:space-x-0 lg:flex-col ${
+                currentRoute === item.route ? "text-yellow-500" : "text-white"
               }`}
               whileHover={{ scale: 1.1 }}
-              onClick={() => router.push(item.route)}
+              onClick={item.action || (() => router.push(item.route))}
             >
               {item.icon}
               <span className="text-sm lg:hidden">{item.label}</span>
@@ -474,6 +539,58 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {showLogoutModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowLogoutModal(false)}
+          >
+            <motion.div
+              className="bg-[#2C2F33] p-6 m-4 rounded-2xl shadow-lg text-center max-w-md"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-semibold text-white">
+                Are you sure?
+              </h2>
+              <p className="text-gray-400 mt-2">
+                Do you want to logout or permanently delete your account?
+              </p>
+              <div className="mt-6 flex justify-center gap-4">
+                <motion.button
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 flex items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleDeleteAccount}
+                  disabled={loadingDelete}
+                >
+                  {loadingDelete && (
+                    <ImSpinner8 className="animate-spin mr-2" />
+                  )}
+                  Delete Account
+                </motion.button>
+                <motion.button
+                  className="bg-[#609EAF] text-white px-4 py-2 rounded-lg hover:bg-[#609EAF] flex items-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleLogout}
+                  disabled={loadingLogout}
+                >
+                  {loadingLogout && (
+                    <ImSpinner8 className="animate-spin mr-2" />
+                  )}
+                  Logout
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
