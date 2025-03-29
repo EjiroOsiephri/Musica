@@ -12,6 +12,7 @@ import Image from "next/image";
 import { toast } from "react-hot-toast";
 import Sidebar from "../components/SideBar";
 import { useSelector } from "react-redux";
+import { ClipLoader } from "react-spinners";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -37,6 +38,7 @@ export default function Profile() {
     phone: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -93,6 +95,7 @@ export default function Profile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await axios.put(`${API_URL}/profile/update`, formData, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -102,6 +105,8 @@ export default function Profile() {
       setEditMode(false);
     } catch (err) {
       toast.error("Update failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -180,7 +185,7 @@ export default function Profile() {
       setTopTracks(trackHistory.slice(0, 3));
     };
 
-    if (trackHistory.length > 0) {
+    if (trackHistory?.length > 0) {
       fetchArtists();
     }
   }, [trackHistory]);
@@ -311,7 +316,13 @@ export default function Profile() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Save Changes
+                    {loading ? (
+                      <div className="flex justify-center">
+                        <ClipLoader color="#FFF" />
+                      </div>
+                    ) : (
+                      "Save Changes"
+                    )}
                   </motion.button>
                 </motion.form>
               ) : (
